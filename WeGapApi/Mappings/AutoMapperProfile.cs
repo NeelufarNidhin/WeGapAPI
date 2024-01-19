@@ -14,8 +14,9 @@ namespace WeGapApi.Mappings
 			CreateMap<AddEmployeeDto, Employee>().ReverseMap();
             CreateMap<UpdateEmployeeDto, Employee>().ReverseMap();
 			CreateMap<UserDto,ApplicationUser>().ReverseMap();
-
-
+            CreateMap<AddEmployerDto, Employer>().ReverseMap();
+            CreateMap<UpdateEmployerDto, Employer>().ReverseMap();
+           
 
 
         }

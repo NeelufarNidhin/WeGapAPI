@@ -32,67 +32,98 @@ namespace WeGapApi.Controllers
         }
 
 
-        //public async Task<IActionResult> GetAll()
-        //{
-
-        //    var employees = _employerRepository
-        //}
-
-
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetEmployerById(Guid id)
+        [HttpGet]
+        public async Task<IActionResult> GetAllEmployers()
         {
+
+            var employers = await _employerRepository.GetAllEmployerAsync();
+
+            var employerDto = _mapper.Map<List<EmployerDto>>(employers);
+
+            return Ok(employerDto);
+
+        }
+
+
+
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> GetEmployerById([FromRoute] Guid id)
+        {
+            //get data from Database
             var employer = await _employerRepository.GetEmployerByIdAsync(id);
+
+
+            //return DTO usimg Mapper
+            var employerDto = _mapper.Map<EmployerDto>(employer);
 
             if (employer is null)
                 return NotFound();
 
-            return Ok(employer);
+            return Ok(employerDto);
 
         }
 
-        
 
+
+       
         [HttpPost]
-        public async Task<IActionResult> AddEmployer([FromBody] EmployerDto employerDto)
+        public async Task<IActionResult> AddEmployer([FromBody] AddEmployerDto addemployerDto)
+
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var employerDomain = _mapper.Map<Employer>(addemployerDto);
+            var userDomain = _employerRepository.GetEmployerByIdAsync;
 
-            var newEmployerId = await _employerRepository.AddEmployerAsync(employerDto);
-            return CreatedAtAction(nameof(GetEmployerById), new { id = newEmployerId }, null);
+            var EmployerDomain = await _employerRepository.AddEmployerAsync(employerDomain);
+
+            var employerDto = _mapper.Map<EmployerDto>(EmployerDomain);
+
+
+
+            return CreatedAtAction(nameof(GetEmployerById), new { id = employerDto.Id });
         }
-
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEmployer(Guid id, [FromBody] EmployerDto employerDto)
+        public async Task<IActionResult> UpdateEmployer(Guid id, [FromBody] UpdateEmployerDto updateEmployerDto)
         {
+
+            //validation
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var isUpdated = await _employerRepository.UpdateEmployerAsync(id, employerDto);
 
-            if (!isUpdated)
+            //Map DTO to Domain model
+            var employerDomain = _mapper.Map<Employer>(updateEmployerDto);
+
+            //check if employee exists
+            employerDomain = await _employerRepository.UpdateEmployerAsync(id, employerDomain);
+
+            if (employerDomain == null)
                 return NotFound();
 
-            return NoContent();
+
+            var employerDto = _mapper.Map<EmployerDto>(employerDomain);
+
+            return Ok(employerDto);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployer(Guid id)
         {
-            var isDeleted = await _employerRepository.DeleteEmployerAsync(id);
+            var employerDomain = await _employerRepository.DeleteEmployerAsync(id);
 
-            if (!isDeleted)
+            if (employerDomain == null)
                 return NotFound();
 
-            return NoContent();
+            return Ok(_mapper.Map<EmployerDto>(employerDomain));
         }
 
-        
+
     }
 }
 
