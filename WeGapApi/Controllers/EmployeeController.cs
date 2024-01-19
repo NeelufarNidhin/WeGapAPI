@@ -40,7 +40,7 @@ namespace WeGapApi.Controllers
         }
 
 
-        // [HttpGet("{id}")]
+       
 
         [HttpGet]
         [Route("{id}")]
