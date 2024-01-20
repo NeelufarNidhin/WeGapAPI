@@ -7,6 +7,8 @@ namespace WeGapApi.Models
 		public string JobTitle { get; set; }
 		public string Description { get; set; }
 		public Guid EmployerId { get; set; }
+
+		//Navigation
 		public Employer Employer { get; set; }
 
     }
