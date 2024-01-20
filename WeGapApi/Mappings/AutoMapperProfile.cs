@@ -11,11 +11,14 @@ namespace WeGapApi.Mappings
 		{
 			CreateMap<Employer, EmployerDto>().ReverseMap();
             CreateMap<Employee, EmployeeDto>().ReverseMap();
+			CreateMap<Job, JobDto>().ReverseMap();
 			CreateMap<AddEmployeeDto, Employee>().ReverseMap();
             CreateMap<UpdateEmployeeDto, Employee>().ReverseMap();
 			CreateMap<UserDto,ApplicationUser>().ReverseMap();
             CreateMap<AddEmployerDto, Employer>().ReverseMap();
             CreateMap<UpdateEmployerDto, Employer>().ReverseMap();
+			CreateMap<AddJobDto, Job>().ReverseMap();
+			CreateMap<UpdateJobDto, Job>().ReverseMap();
            
 
 

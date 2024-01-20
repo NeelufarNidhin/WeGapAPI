@@ -8,6 +8,8 @@ using WeGapApi.Models;
 using Microsoft.OpenApi.Models;
 using AutoMapper;
 using WeGapApi.Mappings;
+using WeGapApi.Repository.Interface;
+using WeGapApi.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +58,7 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IEmployerRepository, EmployerRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IJobRepository, JobRepository>();
 
 
 //Adding Authorization in swagger for JWTBearer Support
