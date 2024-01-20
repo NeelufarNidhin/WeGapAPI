@@ -84,7 +84,7 @@ namespace WeGapApi.Controllers
 
 
 
-            return CreatedAtAction(nameof(GetEmployerById), new { id = employerDto.Id });
+            return CreatedAtAction(nameof(GetEmployerById), new { id = employerDto.Id }, employerDto);
         }
 
 
