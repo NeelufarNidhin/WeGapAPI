@@ -8,12 +8,14 @@ namespace WeGapApi.Models.Dto
        
         public string ApplicationUserId { get; set; }
         public DateTime DOB { get; set; }
+        public string Gender { get; set; }
         public string Address { get; set; }
         public string State { get; set; }
         public string City { get; set; }
         public int Pincode { get; set; }
         public int MobileNumber { get; set; }
-
+        public string Bio { get; set; }
+        public string ImageName { get; set; }
 
 
     }

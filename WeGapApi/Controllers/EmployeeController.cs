@@ -28,7 +28,7 @@ namespace WeGapApi.Controllers
 
 
         [HttpGet]
-        public async Task< IActionResult> GetAll()
+        public async Task<IActionResult> GetAll()
         {
 
             var employees = await _employeeRepository.GetAllAsync();
@@ -40,7 +40,7 @@ namespace WeGapApi.Controllers
         }
 
 
-       
+
 
         [HttpGet]
         [Route("{id}")]
@@ -49,7 +49,7 @@ namespace WeGapApi.Controllers
             //get data from Database
             var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
 
-             
+
             //return DTO usimg Mapper
             var employeeDto = _mapper.Map<EmployeeDto>(employee);
 
@@ -61,21 +61,21 @@ namespace WeGapApi.Controllers
         }
         // GET: api/values
         [HttpPost]
-        public async Task<IActionResult> AddEmployee([FromBody]AddEmployeeDto addemployeeDto)
+        public async Task<IActionResult> AddEmployee([FromBody] AddEmployeeDto addemployeeDto)
 
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var employeeDomain = _mapper.Map<Employee>(addemployeeDto);
-            var userDomain = _employeeRepository.GetEmployeeByIdAsync ;
+            var userDomain = _employeeRepository.GetEmployeeByIdAsync;
 
             var EmployeeDomain = await _employeeRepository.AddEmployeeAsync(employeeDomain);
 
             var employeeDto = _mapper.Map<EmployeeDto>(EmployeeDomain);
 
 
-          
+
             return CreatedAtAction(nameof(GetEmployeeById), new { id = employeeDto.Id }, employeeDto);
         }
 
@@ -114,6 +114,10 @@ namespace WeGapApi.Controllers
 
             return Ok(_mapper.Map<EmployeeDto>(employeeDomain));
         }
+
+        
+       
+
     }
 }
 

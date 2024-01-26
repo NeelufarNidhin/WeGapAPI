@@ -12,8 +12,8 @@ namespace WeGapApi.Models
         [Required(ErrorMessage = "Last name is a required !!")]
         public string LastName { get; set; }
         public string Role { get; set; }
-        
-		public DateTime CreateAt { get; set; }
+
+        public DateTime CreateAt { get; set; } = DateTime.UtcNow;
 		public string Createby { get; set; }
 
     }

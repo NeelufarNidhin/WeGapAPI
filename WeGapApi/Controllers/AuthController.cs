@@ -137,6 +137,7 @@ namespace WeGapApi.Controllers
             //GenerateJWT Token
 
             var roles = await _userManager.GetRolesAsync(userFromDb);
+
             JwtSecurityTokenHandler tokenHandler = new();
             byte[] key = Encoding.ASCII.GetBytes(secretKey);
 

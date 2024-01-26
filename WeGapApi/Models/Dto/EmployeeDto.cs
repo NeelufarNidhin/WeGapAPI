@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace WeGapApi.Models.Dto
 {
 	public class EmployeeDto
@@ -12,8 +14,6 @@ namespace WeGapApi.Models.Dto
         public DateTime DOB { get; set; }
         public string ApplicationUserId { get; set; }
 
-
-      //  public UserDto UserDto { get; set; }
          public ApplicationUser ApplicationUser { get; set; }
     }
 }
