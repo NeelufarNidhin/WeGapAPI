@@ -28,9 +28,9 @@ namespace WeGapApi.Data
 
 
             var userFromDb = _context.ApplicationUsers.FirstOrDefault(x => x.Id == employee.ApplicationUserId);
-           
+           employee.CreatedStatus = true;
             _context.SaveChanges();
-            return employee;
+            return (employee);
         }
 
         public  async Task<Employee?> DeleteEmployeeAsync(Guid id)
@@ -60,12 +60,14 @@ namespace WeGapApi.Data
 
         public async Task<Employee> GetEmployeeByIdAsync(Guid id)
         {
-            return await _context.Employees.FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Employees.Include("ApplicationUser").FirstOrDefaultAsync(x => x.Id == id);
         }
+
+        
 
         //public async Task<ApplicationUser> GetUserByIdAsync(string id)
         //{
-           
+
         //}
 
         public async Task<Employee?> UpdateEmployeeAsync(Guid id, Employee employee)

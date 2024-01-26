@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WeGapApi.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigartion : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -168,11 +168,13 @@ namespace WeGapApi.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     DOB = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Pincode = table.Column<int>(type: "int", nullable: false),
-                    MobileNumber = table.Column<int>(type: "int", nullable: false)
+                    MobileNumber = table.Column<int>(type: "int", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -207,12 +209,61 @@ namespace WeGapApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Education",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Degree = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Subject = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    University = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Percentage = table.Column<double>(type: "float", nullable: false),
+                    StartingDate = table.Column<DateTime>(name: "Starting_Date", type: "datetime2", nullable: false),
+                    CompletionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Education", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Education_Employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Experience",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CurrentJobTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsWorking = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StartingDate = table.Column<DateTime>(name: "Starting_Date", type: "datetime2", nullable: false),
+                    CompletionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CompanyName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Experience", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Experience_Employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Jobs",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    JobTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    JobTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EmployerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -222,6 +273,65 @@ namespace WeGapApi.Migrations
                         name: "FK_Jobs_Employers_EmployerId",
                         column: x => x.EmployerId,
                         principalTable: "Employers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "JobPostings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PostedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    JobId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobPostings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_JobPostings_Jobs_JobId",
+                        column: x => x.JobId,
+                        principalTable: "Jobs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "JobSkill",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SkillName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    JobId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobSkill", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_JobSkill_Jobs_JobId",
+                        column: x => x.JobId,
+                        principalTable: "Jobs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "JobType",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    JobTypeName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    JobId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobType", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_JobType_Jobs_JobId",
+                        column: x => x.JobId,
+                        principalTable: "Jobs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -266,6 +376,11 @@ namespace WeGapApi.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Education_EmployeeId",
+                table: "Education",
+                column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Employees_ApplicationUserId",
                 table: "Employees",
                 column: "ApplicationUserId");
@@ -276,9 +391,29 @@ namespace WeGapApi.Migrations
                 column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Experience_EmployeeId",
+                table: "Experience",
+                column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobPostings_JobId",
+                table: "JobPostings",
+                column: "JobId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Jobs_EmployerId",
                 table: "Jobs",
                 column: "EmployerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobSkill_JobId",
+                table: "JobSkill",
+                column: "JobId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobType_JobId",
+                table: "JobType",
+                column: "JobId");
         }
 
         /// <inheritdoc />
@@ -300,13 +435,28 @@ namespace WeGapApi.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Education");
+
+            migrationBuilder.DropTable(
+                name: "Experience");
+
+            migrationBuilder.DropTable(
+                name: "JobPostings");
+
+            migrationBuilder.DropTable(
+                name: "JobSkill");
+
+            migrationBuilder.DropTable(
+                name: "JobType");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
                 name: "Employees");
 
             migrationBuilder.DropTable(
                 name: "Jobs");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Employers");
