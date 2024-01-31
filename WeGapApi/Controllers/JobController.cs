@@ -107,7 +107,7 @@ namespace WeGapApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEmployer(Guid id)
+        public async Task<IActionResult> DeleteJob(Guid id)
         {
             var jobDomain = await _jobRepository.DeleteJobsAsync(id);
 

@@ -12,6 +12,7 @@ namespace WeGapApi.Mappings
 			CreateMap<Employer, EmployerDto>().ReverseMap();
             CreateMap<Employee, EmployeeDto>().ReverseMap();
 			CreateMap<Job, JobDto>().ReverseMap();
+			CreateMap<Experience, ExperienceDto>().ReverseMap();
 			CreateMap<AddEmployeeDto, Employee>().ReverseMap();
             CreateMap<UpdateEmployeeDto, Employee>().ReverseMap();
 			CreateMap<UserDto,ApplicationUser>().ReverseMap();
@@ -19,9 +20,17 @@ namespace WeGapApi.Mappings
             CreateMap<UpdateEmployerDto, Employer>().ReverseMap();
 			CreateMap<AddJobDto, Job>().ReverseMap();
 			CreateMap<UpdateJobDto, Job>().ReverseMap();
-           
-
-
+			CreateMap<AddExperienceDto, Experience>().ReverseMap();
+			CreateMap<UpdateExperienceDto, Experience>().ReverseMap();
+			CreateMap<Education, EducationDto>().ReverseMap();
+			CreateMap<AddEducationDto, Education>().ReverseMap();
+			CreateMap<UpdateEducationDto, Education>().ReverseMap();
+			CreateMap<JobSkill, JobSkillDto>().ReverseMap();
+			CreateMap<AddJobSkillDto, JobSkill>().ReverseMap();
+			CreateMap<UpdateJobSkillDto, JobSkill>().ReverseMap();
+			CreateMap<JobType, JobTypeDto>().ReverseMap();
+			CreateMap<AddJobTypeDto, JobType>().ReverseMap();
+			CreateMap<UpdateJobTypeDto, JobType>().ReverseMap();
         }
 	}
 }

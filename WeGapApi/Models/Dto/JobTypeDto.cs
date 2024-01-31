@@ -1,11 +1,10 @@
 ﻿using System;
-namespace WeGapApi.Models
+namespace WeGapApi.Models.Dto
 {
-	public class JobType
+	public class JobTypeDto
 	{
         public int Id { get; set; }
         public string JobTypeName { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
 

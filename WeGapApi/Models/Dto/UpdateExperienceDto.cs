@@ -1,9 +1,8 @@
 ﻿using System;
-namespace WeGapApi.Models
+namespace WeGapApi.Models.Dto
 {
-	public class Experience
+	public class UpdateExperienceDto
 	{
-        public Guid Id { get; set; }
         public string CurrentJobTitle { get; set; }
         public string IsWorking { get; set; }
         public string Description { get; set; }
@@ -11,9 +10,6 @@ namespace WeGapApi.Models
         public DateTime CompletionDate { get; set; }
         public string CompanyName { get; set; }
 
-        //Link
-        public Guid EmployeeId { get; set; }
-        public Employee Employee { get; set; }
     }
 }
 

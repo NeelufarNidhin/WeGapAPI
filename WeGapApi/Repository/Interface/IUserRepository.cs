@@ -11,6 +11,7 @@ namespace WeGapApi.Data
         ApplicationUser Update(string id);
         List<ApplicationUser> GetUsers();
         List<ApplicationUser> GetSearchQuery(string searchString);
+        ApplicationUser BlockUnblock(string id);
     }
 }
 

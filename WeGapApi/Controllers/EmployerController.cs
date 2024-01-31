@@ -76,7 +76,7 @@ namespace WeGapApi.Controllers
                 return BadRequest(ModelState);
 
             var employerDomain = _mapper.Map<Employer>(addemployerDto);
-            var userDomain = _employerRepository.GetEmployerByIdAsync;
+          //  var userDomain = _employerRepository.GetEmployerByIdAsync;
 
             var EmployerDomain = await _employerRepository.AddEmployerAsync(employerDomain);
 

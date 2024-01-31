@@ -5,11 +5,7 @@ namespace WeGapApi.Models
 	{
         public int Id { get; set; }
         public string SkillName { get; set; }
-
-
-        //Link
-        public Guid JobId { get; set; }
-        public Job Job { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
 
