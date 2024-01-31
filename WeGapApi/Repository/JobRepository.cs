@@ -34,7 +34,7 @@ namespace WeGapApi.Repository
 
         public async Task<List<Job>> GetAllJobsAsync()
         {
-            return await _context.Jobs.Include("Employer").ToListAsync();
+            return await _context.Jobs.Include(j=>j.Employer).Include(j=>j.JobSkills).Include(j=>j.JobTypes).ToListAsync();
         }
 
         public async Task<Job> GetJobsByIdAsync(Guid id)

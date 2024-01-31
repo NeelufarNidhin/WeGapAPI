@@ -12,8 +12,8 @@ using WeGapApi.Data;
 namespace WeGapApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240125201612_ModifyStatusEmployeetable")]
-    partial class ModifyStatusEmployeetable
+    [Migration("20240128210149_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -186,6 +186,9 @@ namespace WeGapApi.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsBlocked")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -384,6 +387,8 @@ namespace WeGapApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmployeeId");
+
                     b.ToTable("Experience");
                 });
 
@@ -393,7 +398,7 @@ namespace WeGapApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreateAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -402,13 +407,28 @@ namespace WeGapApi.Migrations
                     b.Property<Guid>("EmployerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("JobTitle")
-                        .IsRequired()
+                    b.Property<string>("Experience")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("JobSkillId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("JobTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("JobTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Salary")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EmployerId");
+
+                    b.HasIndex("JobSkillId");
+
+                    b.HasIndex("JobTypeId");
 
                     b.ToTable("Jobs");
                 });
@@ -440,15 +460,13 @@ namespace WeGapApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid>("JobId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SkillName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("JobId");
 
                     b.ToTable("JobSkill");
                 });
@@ -461,15 +479,13 @@ namespace WeGapApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid>("JobId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("JobTypeName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("JobId");
 
                     b.ToTable("JobType");
                 });
@@ -543,6 +559,17 @@ namespace WeGapApi.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
+            modelBuilder.Entity("WeGapApi.Models.Experience", b =>
+                {
+                    b.HasOne("WeGapApi.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("WeGapApi.Models.Job", b =>
                 {
                     b.HasOne("WeGapApi.Models.Employer", "Employer")
@@ -551,32 +578,26 @@ namespace WeGapApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("WeGapApi.Models.JobSkill", "JobSkill")
+                        .WithMany()
+                        .HasForeignKey("JobSkillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WeGapApi.Models.JobType", "JobType")
+                        .WithMany()
+                        .HasForeignKey("JobTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Employer");
+
+                    b.Navigation("JobSkill");
+
+                    b.Navigation("JobType");
                 });
 
             modelBuilder.Entity("WeGapApi.Models.JobPosting", b =>
-                {
-                    b.HasOne("WeGapApi.Models.Job", "Job")
-                        .WithMany()
-                        .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Job");
-                });
-
-            modelBuilder.Entity("WeGapApi.Models.JobSkill", b =>
-                {
-                    b.HasOne("WeGapApi.Models.Job", "Job")
-                        .WithMany()
-                        .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Job");
-                });
-
-            modelBuilder.Entity("WeGapApi.Models.JobType", b =>
                 {
                     b.HasOne("WeGapApi.Models.Job", "Job")
                         .WithMany()

@@ -7,14 +7,15 @@ namespace WeGapApi.Models
 	{
 
 
-		public ApiResponse()
-		{
-			ErrrorMessages = new List<string>();
-		}
+		//public ApiResponse()
+		//{
+		//	ErrrorMessages = new List<string>();
+		//}
 
 		public HttpStatusCode StatusCode { get; set; }
 		public bool IsSuccess { get; set; } = true;
-		public List<string> ErrrorMessages { get; set; }
+		public string Message { get; set; }
+		public string ErrorMessages { get; set; }
 		public object Result { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
-namespace WeGapApi.Models
+namespace WeGapApi.Models.Dto
 {
-	public class Experience
+	public class ExperienceDto
 	{
         public Guid Id { get; set; }
         public string CurrentJobTitle { get; set; }
@@ -13,7 +13,6 @@ namespace WeGapApi.Models
 
         //Link
         public Guid EmployeeId { get; set; }
-        public Employee Employee { get; set; }
     }
 }
 

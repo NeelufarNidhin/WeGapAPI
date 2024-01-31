@@ -1,4 +1,6 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using WeGapApi.Models;
 
 namespace WeGapApi.Data
@@ -51,6 +53,30 @@ namespace WeGapApi.Data
             var user = _db.ApplicationUsers.FirstOrDefault(x => x.Id == id);
 
             return user;
+        }
+
+        public ApplicationUser BlockUnblock(string id)
+        {
+            var userFromDb = _db.ApplicationUsers.FirstOrDefault(u => u.Id == id);
+            //if (userFromDb == null)
+            //{
+            //    return Json(new { success = false, message = "Error while Opertaion" });
+            //}
+            if (userFromDb.LockoutEnd != null && userFromDb.LockoutEnd > DateTime.Now)
+            {
+                //unlock if locked
+                userFromDb.LockoutEnd = DateTime.Now;
+            }
+            else
+            {
+                userFromDb.LockoutEnd = DateTime.Now.AddYears(1000);
+            }
+            _db.ApplicationUsers.Update(userFromDb);
+            _db.SaveChanges();
+
+            return userFromDb;
+
+           // return Json(new { success = true, message = "Operation Successfull" });
         }
     }
 

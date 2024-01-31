@@ -15,6 +15,7 @@ namespace WeGapApi.Models
 
         public DateTime CreateAt { get; set; } = DateTime.UtcNow;
 		public string Createby { get; set; }
+        public bool IsBlocked { get; set; }
 
     }
 }

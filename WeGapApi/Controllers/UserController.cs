@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using WeGapApi.Data;
 using WeGapApi.Models;
 using WeGapApi.Models.Dto;
@@ -74,8 +75,31 @@ namespace WeGapApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost("block/{userId}")]
+        public async Task<IActionResult> ToggleUserAccountStatus(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user.LockoutEnd != null && user.LockoutEnd > DateTime.Now)
+            {
+              
+                user.LockoutEnd = DateTime.Now;
+
+            }
+
+            else
+            {
+                user.LockoutEnd = DateTime.Now.AddYears(1000);
+            }
+
+           
+            await _userManager.UpdateAsync(user);
+
+            return Ok(user);
+          
 
 
+        }
 
     }
 }
