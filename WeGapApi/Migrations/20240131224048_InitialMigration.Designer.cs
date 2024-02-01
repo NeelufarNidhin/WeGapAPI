@@ -12,7 +12,7 @@ using WeGapApi.Data;
 namespace WeGapApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240128210149_InitialMigration")]
+    [Migration("20240131224048_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -188,6 +188,9 @@ namespace WeGapApi.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsBlocked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsProfile")
                         .HasColumnType("bit");
 
                     b.Property<string>("LastName")
@@ -410,14 +413,8 @@ namespace WeGapApi.Migrations
                     b.Property<string>("Experience")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("JobSkillId")
-                        .HasColumnType("int");
-
                     b.Property<string>("JobTitle")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("JobTypeId")
-                        .HasColumnType("int");
 
                     b.Property<double>("Salary")
                         .HasColumnType("float");
@@ -425,10 +422,6 @@ namespace WeGapApi.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EmployerId");
-
-                    b.HasIndex("JobSkillId");
-
-                    b.HasIndex("JobTypeId");
 
                     b.ToTable("Jobs");
                 });
@@ -463,10 +456,15 @@ namespace WeGapApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("JobId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("SkillName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("JobId");
 
                     b.ToTable("JobSkill");
                 });
@@ -482,12 +480,44 @@ namespace WeGapApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("JobId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("JobTypeName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("JobId");
+
                     b.ToTable("JobType");
+                });
+
+            modelBuilder.Entity("WeGapApi.Models.OTPRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Otp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("OTPRecord");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -578,23 +608,7 @@ namespace WeGapApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WeGapApi.Models.JobSkill", "JobSkill")
-                        .WithMany()
-                        .HasForeignKey("JobSkillId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WeGapApi.Models.JobType", "JobType")
-                        .WithMany()
-                        .HasForeignKey("JobTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Employer");
-
-                    b.Navigation("JobSkill");
-
-                    b.Navigation("JobType");
                 });
 
             modelBuilder.Entity("WeGapApi.Models.JobPosting", b =>
@@ -606,6 +620,36 @@ namespace WeGapApi.Migrations
                         .IsRequired();
 
                     b.Navigation("Job");
+                });
+
+            modelBuilder.Entity("WeGapApi.Models.JobSkill", b =>
+                {
+                    b.HasOne("WeGapApi.Models.Job", null)
+                        .WithMany("JobSkills")
+                        .HasForeignKey("JobId");
+                });
+
+            modelBuilder.Entity("WeGapApi.Models.JobType", b =>
+                {
+                    b.HasOne("WeGapApi.Models.Job", null)
+                        .WithMany("JobTypes")
+                        .HasForeignKey("JobId");
+                });
+
+            modelBuilder.Entity("WeGapApi.Models.OTPRecord", b =>
+                {
+                    b.HasOne("WeGapApi.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("WeGapApi.Models.Job", b =>
+                {
+                    b.Navigation("JobSkills");
+
+                    b.Navigation("JobTypes");
                 });
 #pragma warning restore 612, 618
         }
