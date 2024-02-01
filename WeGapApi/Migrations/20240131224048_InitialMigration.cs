@@ -36,6 +36,7 @@ namespace WeGapApi.Migrations
                     CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Createby = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsBlocked = table.Column<bool>(type: "bit", nullable: false),
+                    IsProfile = table.Column<bool>(type: "bit", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -72,34 +73,6 @@ namespace WeGapApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Education", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "JobSkill",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SkillName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_JobSkill", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "JobType",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    JobTypeName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_JobType", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -259,6 +232,27 @@ namespace WeGapApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OTPRecord",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Otp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OTPRecord", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OTPRecord_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Experience",
                 columns: table => new
                 {
@@ -292,9 +286,7 @@ namespace WeGapApi.Migrations
                     Experience = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Salary = table.Column<double>(type: "float", nullable: false),
                     EmployerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    JobSkillId = table.Column<int>(type: "int", nullable: false),
-                    JobTypeId = table.Column<int>(type: "int", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -303,18 +295,6 @@ namespace WeGapApi.Migrations
                         name: "FK_Jobs_Employers_EmployerId",
                         column: x => x.EmployerId,
                         principalTable: "Employers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Jobs_JobSkill_JobSkillId",
-                        column: x => x.JobSkillId,
-                        principalTable: "JobSkill",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Jobs_JobType_JobTypeId",
-                        column: x => x.JobTypeId,
-                        principalTable: "JobType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -336,6 +316,46 @@ namespace WeGapApi.Migrations
                         principalTable: "Jobs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "JobSkill",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SkillName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    JobId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobSkill", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_JobSkill_Jobs_JobId",
+                        column: x => x.JobId,
+                        principalTable: "Jobs",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "JobType",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    JobTypeName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    JobId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobType", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_JobType_Jobs_JobId",
+                        column: x => x.JobId,
+                        principalTable: "Jobs",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -403,14 +423,19 @@ namespace WeGapApi.Migrations
                 column: "EmployerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Jobs_JobSkillId",
-                table: "Jobs",
-                column: "JobSkillId");
+                name: "IX_JobSkill_JobId",
+                table: "JobSkill",
+                column: "JobId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Jobs_JobTypeId",
-                table: "Jobs",
-                column: "JobTypeId");
+                name: "IX_JobType_JobId",
+                table: "JobType",
+                column: "JobId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OTPRecord_ApplicationUserId",
+                table: "OTPRecord",
+                column: "ApplicationUserId");
         }
 
         /// <inheritdoc />
@@ -441,6 +466,15 @@ namespace WeGapApi.Migrations
                 name: "JobPostings");
 
             migrationBuilder.DropTable(
+                name: "JobSkill");
+
+            migrationBuilder.DropTable(
+                name: "JobType");
+
+            migrationBuilder.DropTable(
+                name: "OTPRecord");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -451,12 +485,6 @@ namespace WeGapApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "Employers");
-
-            migrationBuilder.DropTable(
-                name: "JobSkill");
-
-            migrationBuilder.DropTable(
-                name: "JobType");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

@@ -27,8 +27,9 @@ namespace WeGapApi.Data
              await _context.Employees.AddAsync(employee);
 
 
-           // var userFromDb = _context.ApplicationUsers.FirstOrDefault(x => x.Id == employee.ApplicationUserId);
-           employee.CreatedStatus = true;
+            var userFromDb = _context.ApplicationUsers.FirstOrDefault(x => x.Id == employee.ApplicationUserId);
+            employee.CreatedStatus = true;
+            userFromDb.IsProfile = true;
             _context.SaveChanges();
             return (employee);
         }

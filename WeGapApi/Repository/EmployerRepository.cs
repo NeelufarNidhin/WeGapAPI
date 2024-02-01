@@ -29,7 +29,7 @@ namespace WeGapApi.Data
 
 
             var userFromDb = _context.ApplicationUsers.FirstOrDefault(x => x.Id == employer.ApplicationUserId);
-
+            userFromDb.IsProfile = true;
             _context.SaveChanges();
             return employer;
         }
@@ -40,7 +40,7 @@ namespace WeGapApi.Data
 
 
             if (employerfromDb == null)
-            {
+            { 
                 return null;
             }
 
