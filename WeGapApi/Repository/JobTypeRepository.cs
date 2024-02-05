@@ -21,7 +21,7 @@ namespace WeGapApi.Repository
             return jobType;
         }
 
-        public async Task<JobType> DeleteJobTypeAsync(int id)
+        public async Task<JobType> DeleteJobTypeAsync(Guid id)
         {
             var jobfromDb = await _context.JobType.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -37,12 +37,12 @@ namespace WeGapApi.Repository
             return await _context.JobType.ToListAsync();
         }
 
-        public async Task<JobType> GetJobTypeByIdAsync(int id)
+        public async Task<JobType> GetJobTypeByIdAsync(Guid id)
         {
             return await _context.JobType.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public  async Task<JobType> UpdateJobTypeAsync(int id, JobType jobType)
+        public  async Task<JobType> UpdateJobTypeAsync(Guid id, JobType jobType)
         {
             var jobfromDb = await _context.JobType.FirstOrDefaultAsync(x => x.Id == id);
 

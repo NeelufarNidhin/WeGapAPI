@@ -17,11 +17,12 @@ namespace WeGapApi.Repository
         public async Task<JobSkill> AddJobSkillAsync(JobSkill jobSkill)
         {
             await _context.JobSkill.AddAsync(jobSkill);
+
             _context.SaveChanges();
             return jobSkill;
         }
 
-        public async Task<JobSkill> DeleteJobSkillAsync(int id)
+        public async Task<JobSkill> DeleteJobSkillAsync(Guid id)
         {
             var jobSkillfromDb = await _context.JobSkill.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -37,12 +38,12 @@ namespace WeGapApi.Repository
             return await _context.JobSkill.ToListAsync();
         }
 
-        public async Task<JobSkill> GetJobSkillByIdAsync(int id)
+        public async Task<JobSkill> GetJobSkillByIdAsync(Guid id)
         {
             return await _context.JobSkill.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<JobSkill> UpdateJobSkillAsync(int id, JobSkill jobSkill)
+        public async Task<JobSkill> UpdateJobSkillAsync(Guid id, JobSkill jobSkill)
         {
             var jobSkillfromDb = await _context.JobSkill.FirstOrDefaultAsync(x => x.Id == id);
 
