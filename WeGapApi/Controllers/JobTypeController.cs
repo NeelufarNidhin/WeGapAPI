@@ -43,7 +43,7 @@ namespace WeGapApi.Controllers
         [HttpGet]
         [Route("{id}")]
 
-        public async Task<IActionResult> GetJobTypeById([FromRoute] int id)
+        public async Task<IActionResult> GetJobTypeById([FromRoute] Guid id)
         {
             //obtain data
             var jobTypeDomain = await _jobTypeRepository.GetJobTypeByIdAsync(id);
@@ -82,7 +82,7 @@ namespace WeGapApi.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateJobtype(int id, [FromBody] UpdateJobTypeDto updateJobTypeDto)
+        public async Task<IActionResult> UpdateJobtype(Guid id, [FromBody] UpdateJobTypeDto updateJobTypeDto)
         {
 
             //validation
@@ -106,7 +106,7 @@ namespace WeGapApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteJobtype(int id)
+        public async Task<IActionResult> DeleteJobtype(Guid id)
         {
             var jobTypeDomain = await _jobTypeRepository.DeleteJobTypeAsync(id);
 

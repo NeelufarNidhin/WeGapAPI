@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using WeGapApi.Models;
 using WeGapApi.Models.Dto;
 using WeGapApi.Repository.Interface;
@@ -70,17 +72,50 @@ namespace WeGapApi.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            try
+            {
 
-            var job =  _mapper.Map<Job>(addJobDto);
+                var job = _mapper.Map<Job>(addJobDto);
 
-           var  jobDomain =  await  _jobRepository.AddJobsAsync(job);
+                var jobDomain = await _jobRepository.AddJobsAsync(job);
 
 
-            var jobDto = _mapper.Map<JobDto>(jobDomain);
+                var jobDto = _mapper.Map<JobDto>(jobDomain);
 
-            return CreatedAtAction(nameof(GetJobById) , new  { id = jobDto.Id}, jobDto);
+                return CreatedAtAction(nameof(GetJobById), new { id = jobDto.Id }, jobDto);
+            }
+            catch (DbUpdateException ex)
+            {
+                // Log the outer exception
+                Console.WriteLine($"Outer Exception: {ex.Message}");
+
+                // Check if there is an inner exception
+                if (ex.InnerException != null)
+                {
+                    // Check if the inner exception is of type SqlException
+                    if (ex.InnerException is SqlException sqlException)
+                    {
+                        // Log the details of the SqlException
+                        Console.WriteLine($"SqlException Number: {sqlException.Number}");
+                        Console.WriteLine($"SqlException Message: {sqlException.Message}");
+                        Console.WriteLine($"SqlException State: {sqlException.State}");
+                        Console.WriteLine($"SqlException Class: {sqlException.Class}");
+                        Console.WriteLine($"SqlException Procedure: {sqlException.Procedure}");
+                        Console.WriteLine($"SqlException LineNumber: {sqlException.LineNumber}");
+
+                        // You can access more properties of the SqlException if needed
+                    }
+                    else
+                    {
+                        // Log the details of the inner exception if it's not a SqlException
+                        Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                    }
+
+                   
+                }
+                return Ok(ex.InnerException.Message);
+            }
         }
-
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateJob(Guid id, [FromBody] UpdateJobDto updateJobDto)

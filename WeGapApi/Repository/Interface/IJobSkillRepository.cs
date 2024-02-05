@@ -6,10 +6,10 @@ namespace WeGapApi.Repository.Interface
 	public interface IJobSkillRepository
 	{
         Task<List<JobSkill>> GetAllJobSkillAsync();
-        Task<JobSkill> GetJobSkillByIdAsync(int id);
+        Task<JobSkill> GetJobSkillByIdAsync(Guid id);
         Task<JobSkill> AddJobSkillAsync(JobSkill jobSkill);
-        Task<JobSkill> UpdateJobSkillAsync(int id, JobSkill jobSkill);
-        Task<JobSkill> DeleteJobSkillAsync(int id);
+        Task<JobSkill> UpdateJobSkillAsync(Guid id, JobSkill jobSkill);
+        Task<JobSkill> DeleteJobSkillAsync(Guid id);
     }
 }
 

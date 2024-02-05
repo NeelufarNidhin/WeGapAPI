@@ -17,7 +17,23 @@ namespace WeGapApi.Repository
         public async Task<Job> AddJobsAsync(Job job)
         {
           await _context.Jobs.AddAsync(job);
-            _context.SaveChanges();
+           
+            await _context.SaveChangesAsync();
+
+            foreach (var jobSkillId in job.JobJobSkill.Select(jjs => jjs.JobSkillId))
+            {
+                var jobJobSkill = new JobJobSkill
+                {
+                    JobId = job.Id,
+                    JobSkillId = jobSkillId
+                };
+
+                // Add the new JobJobSkill entry to the context
+                await _context.JobJobSkill.AddAsync(jobJobSkill);
+            }
+
+            // Save changes after adding all JobJobSkill entries
+            await _context.SaveChangesAsync();
             return job;
         }
 
@@ -34,7 +50,7 @@ namespace WeGapApi.Repository
 
         public async Task<List<Job>> GetAllJobsAsync()
         {
-            return await _context.Jobs.Include(j=>j.Employer).Include(j=>j.JobSkills).Include(j=>j.JobTypes).ToListAsync();
+            return await _context.Jobs.Include(j=>j.Employer).ToListAsync();
         }
 
         public async Task<Job> GetJobsByIdAsync(Guid id)

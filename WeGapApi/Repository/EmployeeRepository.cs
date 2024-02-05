@@ -64,10 +64,11 @@ namespace WeGapApi.Data
             return await _context.Employees.Include("ApplicationUser").FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        
-
-
-       
+        //public async Task<ApplicationUser> GetUserByIdAsync(string id)
+        //{
+        //    var user = _context.Employees.FirstOrDefault(u => u.ApplicationUserId == id);
+        //    return user.ApplicationUser;
+        //}
 
         public async Task<Employee?> UpdateEmployeeAsync(Guid id, Employee employee)
         {

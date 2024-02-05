@@ -115,8 +115,13 @@ namespace WeGapApi.Controllers
             return Ok(_mapper.Map<EmployeeDto>(employeeDomain));
         }
 
-        
-       
+        //[HttpGet("Get-User")]
+        //public async Task<IActionResult> GetUser(string id)
+        //{
+        //    var user = await _employeeRepository.GetUserByIdAsync(id);
+        //    return Ok(user);
+        //}
+
 
     }
 }

@@ -182,9 +182,9 @@ namespace WeGapApi.Controllers
             }
 
 
-            //GenerateJWT Token
+           
 
-            var roles = await _userManager.GetRolesAsync(userFromDb);
+          //  var roles = await _userManager.GetRolesAsync(userFromDb);
             if (userFromDb.TwoFactorEnabled)
             {
 
@@ -323,10 +323,48 @@ namespace WeGapApi.Controllers
            
         }
 
+        [HttpPost("resend-otp")]
+        public async Task<IActionResult> ResendOTP([FromBody] ResendOtpDto model)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
 
-        
+                if (user == null)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages = "User not found";
+                    return BadRequest(_response);
+                }
 
-       
+                var otptoken = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+                // string newOtp = GenerateRandomOtp();
+
+                // Update the user's OTP (if necessary)
+                // You might have to adjust this according to your implementation
+                user.TwoFactorEnabled = true;
+                await _userManager.UpdateAsync(user);
+
+                // Send the new OTP to the user's email
+                await _emailSender.SendEmailAsync(user.Email, "New OTP", $"Your new OTP is: {otptoken}");
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                _response.Message = "New OTP sent successfully";
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = ex.Message;
+                return StatusCode(500, _response); // Internal Server Error
+            }
+        }
+
+
+
 
     }
 }
