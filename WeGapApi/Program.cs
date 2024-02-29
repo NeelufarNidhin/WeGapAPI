@@ -12,6 +12,8 @@ using WeGapApi.Repository.Interface;
 using WeGapApi.Repository;
 using WeGapApi.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using WeGapApi.Services.Services.Interface;
+using WeGapApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +24,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>().
+    AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
 
 
 //Key in appsettings.json is accessed
@@ -73,6 +76,8 @@ builder.Services.AddScoped<IExperienceRepository, ExperienceRepository>();
 builder.Services.AddScoped<IEducationRepository, EducationRepository>();
 builder.Services.AddScoped<IJobSkillRepository, JobSkillRepository>();
 builder.Services.AddScoped<IJobTypeRepository, JobTypeRepository>();
+builder.Services.AddScoped<IServiceManager, ServiceManager>();
+builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 //builder.Services.AddScoped<ILogger>();
 
 
