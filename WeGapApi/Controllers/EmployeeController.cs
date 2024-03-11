@@ -39,9 +39,8 @@ namespace WeGapApi.Controllers
 
 
 
-        [HttpGet]
-        [Route("{id}")]
-        public async Task<IActionResult> GetEmployeeById([FromRoute] Guid id)
+        [HttpGet("{id}", Name = "EmployeeById")]
+        public async Task<IActionResult> GetEmployeeById(Guid id)
         {
            
 
@@ -60,7 +59,7 @@ namespace WeGapApi.Controllers
 
             var employeeDto = _serviceManager.EmployeeService.AddEmployeeAsync(addEmployeeDto);
 
-            return CreatedAtAction(nameof(GetEmployeeById), new { id = employeeDto.Id }, employeeDto);
+            return CreatedAtRoute("EmployeeById", new { id = employeeDto.Id }, employeeDto);
         }
 
 

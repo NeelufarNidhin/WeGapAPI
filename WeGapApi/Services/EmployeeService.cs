@@ -21,11 +21,11 @@ namespace WeGapApi.Services
         {
            
             var employeeDomain = _mapper.Map<Employee>(addemployeeDto);
-            var userDomain = _repositoryManager.Employee.GetEmployeeByIdAsync;
+           // var userDomain = _repositoryManager.Employee.GetEmployeeByIdAsync;
 
-            var EmployeeDomain = await _repositoryManager.Employee.AddEmployeeAsync(employeeDomain);
+            _repositoryManager.Employee.AddEmployeeAsync(employeeDomain);
 
-            var employeeDto = _mapper.Map<EmployeeDto>(EmployeeDomain);
+            var employeeDto = _mapper.Map<EmployeeDto>(employeeDomain);
             return employeeDto;
 
         }

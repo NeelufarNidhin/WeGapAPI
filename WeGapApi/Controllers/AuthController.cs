@@ -30,12 +30,12 @@ namespace WeGapApi.Controllers
         private string secretKey;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly OtpService _otpService;
+        
         private readonly IEmailSender _emailSender;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
 
-        public AuthController(ApplicationDbContext db, UserManager<ApplicationUser> userManager, OtpService otpService,
+        public AuthController(ApplicationDbContext db, UserManager<ApplicationUser> userManager, 
             RoleManager<IdentityRole> roleManager, IConfiguration configuration, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager)
         {
             _db = db;
@@ -43,7 +43,7 @@ namespace WeGapApi.Controllers
             secretKey = configuration.GetValue<string>("ApiSettings:Secret");
             _userManager = userManager;
             _roleManager = roleManager;
-            _otpService = otpService;
+           
             _emailSender = emailSender;
             _signInManager = signInManager;
 
@@ -203,10 +203,10 @@ namespace WeGapApi.Controllers
 
             else
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = "Username or Password is Incorrect";
-                return BadRequest(_response);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                _response.Message = $"We have sent OTP to your Email {userFromDb.Email}";
+                return Ok(_response);
             }
         }
 
