@@ -33,6 +33,8 @@
     <None Remove="Utility\" />
     <None Remove="Mappings\" />
     <None Remove="Repository\" />
+    <None Remove="Services\" />
+    <None Remove="Services\Services.Interface\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
@@ -42,5 +44,7 @@
     <Folder Include="Utility\" />
     <Folder Include="Mappings\" />
     <Folder Include="Repository\" />
+    <Folder Include="Services\" />
+    <Folder Include="Services\Services.Interface\" />
   </ItemGroup>
 </Project>

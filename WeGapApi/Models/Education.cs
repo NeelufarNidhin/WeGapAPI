@@ -11,9 +11,9 @@ namespace WeGapApi.Models
         public DateTime Starting_Date { get; set; }
         public DateTime CompletionDate { get; set; }
 
-        //Link
+        
         public Guid EmployeeId { get; set; }
-       // public Employee Employee { get; set; }
+       public Employee Employee { get; set; }
     }
 }
 

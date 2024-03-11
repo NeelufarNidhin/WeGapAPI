@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using WeGapApi.Models;
 using WeGapApi.Models.Dto;
 using WeGapApi.Repository.Interface;
+using WeGapApi.Services.Services.Interface;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,14 +19,12 @@ namespace WeGapApi.Controllers
     public class JobController : Controller
     {
 
-        private readonly IJobRepository _jobRepository;
-        private IMapper _mapper;
+        private readonly IServiceManager _service;
 
 
-        public JobController(IJobRepository jobRepository, IMapper mapper)
+        public JobController( IServiceManager service)
         {
-            _jobRepository = jobRepository;
-            _mapper = mapper;
+            _service = service;
 
         }
 
@@ -33,9 +32,7 @@ namespace WeGapApi.Controllers
 
         public async Task<IActionResult> GetAllJobs()
         {
-            var jobDomain = await _jobRepository.GetAllJobsAsync();
-
-            var jobDto = _mapper.Map<List<JobDto>>(jobDomain);
+            var jobDto = await _service.JobService.GetAllJobsAsync();
 
             return Ok(jobDto);
 
@@ -48,18 +45,8 @@ namespace WeGapApi.Controllers
 
         public async Task <IActionResult> GetJobById([FromRoute] Guid id)
         {
-            //obtain data
-            var jobDomain = await _jobRepository.GetJobsByIdAsync(id);
 
-            if( jobDomain == null)
-            {
-                return NotFound();
-            }
-
-            //mapping
-            var jobDto = _mapper.Map<JobDto>(jobDomain);
-
-
+            var jobDto = await _service.JobService.GetJobsByIdAsync(id);
             return Ok(jobDto);
 
 
@@ -70,73 +57,17 @@ namespace WeGapApi.Controllers
         public async Task<IActionResult> AddJobs([FromBody] AddJobDto addJobDto)
         {
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            try
-            {
-
-                var job = _mapper.Map<Job>(addJobDto);
-
-                var jobDomain = await _jobRepository.AddJobsAsync(job);
-
-
-                var jobDto = _mapper.Map<JobDto>(jobDomain);
+            var jobDto = await _service.JobService.AddJobsAsync(addJobDto);
 
                 return CreatedAtAction(nameof(GetJobById), new { id = jobDto.Id }, jobDto);
-            }
-            catch (DbUpdateException ex)
-            {
-                // Log the outer exception
-                Console.WriteLine($"Outer Exception: {ex.Message}");
-
-                // Check if there is an inner exception
-                if (ex.InnerException != null)
-                {
-                    // Check if the inner exception is of type SqlException
-                    if (ex.InnerException is SqlException sqlException)
-                    {
-                        // Log the details of the SqlException
-                        Console.WriteLine($"SqlException Number: {sqlException.Number}");
-                        Console.WriteLine($"SqlException Message: {sqlException.Message}");
-                        Console.WriteLine($"SqlException State: {sqlException.State}");
-                        Console.WriteLine($"SqlException Class: {sqlException.Class}");
-                        Console.WriteLine($"SqlException Procedure: {sqlException.Procedure}");
-                        Console.WriteLine($"SqlException LineNumber: {sqlException.LineNumber}");
-
-                        // You can access more properties of the SqlException if needed
-                    }
-                    else
-                    {
-                        // Log the details of the inner exception if it's not a SqlException
-                        Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
-                    }
-
-                   
-                }
-                return Ok(ex.InnerException.Message);
-            }
+            
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateJob(Guid id, [FromBody] UpdateJobDto updateJobDto)
         {
 
-            //validation
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-
-            //Map DTO to Domain model
-            var jobDomain = _mapper.Map<Job>(updateJobDto);
-
-            //check if employee exists
-           jobDomain = await _jobRepository.UpdateJobsAsync(id,jobDomain);
-
-            if (jobDomain == null)
-                return NotFound();
-
-
-            var jobDto = _mapper.Map<JobDto>(jobDomain);
+            var jobDto = await _service.JobService.UpdateJobsAsync(id, updateJobDto);
 
             return Ok(jobDto);
         }
@@ -144,12 +75,10 @@ namespace WeGapApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteJob(Guid id)
         {
-            var jobDomain = await _jobRepository.DeleteJobsAsync(id);
+            var jobDto = await _service.JobService.DeleteJobsAsync(id);
+                
 
-            if (jobDomain == null)
-                return NotFound();
-
-            return Ok(_mapper.Map<JobDto>(jobDomain));
+            return Ok(jobDto);
         }
     }
 }
