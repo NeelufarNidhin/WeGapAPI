@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using WeGapApi.Data;
 using WeGapApi.Models;
 using WeGapApi.Models.Dto;
+using WeGapApi.Services.Services.Interface;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,16 +20,11 @@ namespace WeGapApi.Controllers
     public class EmployerController : ControllerBase
     {
 
-        private readonly IEmployerRepository _employerRepository;
-        private readonly IMapper _mapper;
-
-
-        public EmployerController(IEmployerRepository employerRepository, IMapper mapper)
+        private readonly IServiceManager _service;
+        public EmployerController(IServiceManager service)
 
         {
-
-            _employerRepository = employerRepository;
-            _mapper = mapper;
+            _service = service;
         }
 
 
@@ -36,9 +32,8 @@ namespace WeGapApi.Controllers
         public async Task<IActionResult> GetAllEmployers()
         {
 
-            var employers = await _employerRepository.GetAllEmployerAsync();
 
-            var employerDto = _mapper.Map<List<EmployerDto>>(employers);
+            var employerDto = await _service.EmployerService.GetAllEmployerAsync();
 
             return Ok(employerDto);
 
@@ -51,15 +46,10 @@ namespace WeGapApi.Controllers
         [Route("{id}")]
         public async Task<IActionResult> GetEmployerById([FromRoute] Guid id)
         {
-            //get data from Database
-            var employer = await _employerRepository.GetEmployerByIdAsync(id);
 
 
-            //return DTO usimg Mapper
-            var employerDto = _mapper.Map<EmployerDto>(employer);
 
-            if (employer is null)
-                return NotFound();
+            var employerDto = await  _service.EmployerService.GetEmployerByIdAsync(id);
 
             return Ok(employerDto);
 
@@ -69,19 +59,10 @@ namespace WeGapApi.Controllers
 
        
         [HttpPost]
-        public async Task<IActionResult> AddEmployer([FromBody] AddEmployerDto addemployerDto)
+        public async Task<IActionResult> AddEmployer([FromBody] AddEmployerDto addEmployerDto)
 
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var employerDomain = _mapper.Map<Employer>(addemployerDto);
-          //  var userDomain = _employerRepository.GetEmployerByIdAsync;
-
-            var EmployerDomain = await _employerRepository.AddEmployerAsync(employerDomain);
-
-            var employerDto = _mapper.Map<EmployerDto>(EmployerDomain);
-
+            var employerDto =  await _service.EmployerService.AddEmployerAsync(addEmployerDto);
 
 
             return CreatedAtAction(nameof(GetEmployerById), new { id = employerDto.Id }, employerDto);
@@ -92,22 +73,7 @@ namespace WeGapApi.Controllers
         public async Task<IActionResult> UpdateEmployer(Guid id, [FromBody] UpdateEmployerDto updateEmployerDto)
         {
 
-            //validation
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-
-            //Map DTO to Domain model
-            var employerDomain = _mapper.Map<Employer>(updateEmployerDto);
-
-            //check if employee exists
-            employerDomain = await _employerRepository.UpdateEmployerAsync(id, employerDomain);
-
-            if (employerDomain == null)
-                return NotFound();
-
-
-            var employerDto = _mapper.Map<EmployerDto>(employerDomain);
+          var employerDto =await  _service.EmployerService.UpdateEmployerAsync(id, updateEmployerDto);
 
             return Ok(employerDto);
         }
@@ -115,12 +81,9 @@ namespace WeGapApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployer(Guid id)
         {
-            var employerDomain = await _employerRepository.DeleteEmployerAsync(id);
 
-            if (employerDomain == null)
-                return NotFound();
-
-            return Ok(_mapper.Map<EmployerDto>(employerDomain));
+            var employerDto = await _service.EmployerService.DeleteEmployerAsync(id);
+            return Ok(employerDto);
         }
 
 

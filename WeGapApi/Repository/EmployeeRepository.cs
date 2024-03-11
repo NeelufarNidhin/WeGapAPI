@@ -22,17 +22,20 @@ namespace WeGapApi.Data
            
         }
 
-        public async Task<Employee> AddEmployeeAsync(Employee employee)
+        public void AddEmployeeAsync(Employee employee)
         {
-             await _context.Employees.AddAsync(employee);
+              _context.Employees.AddAsync(employee);
 
 
             var userFromDb = _context.ApplicationUsers.FirstOrDefault(x => x.Id == employee.ApplicationUserId);
             employee.CreatedStatus = true;
             userFromDb.IsProfile = true;
             _context.SaveChanges();
-            return (employee);
+           
         }
+
+
+
 
         public  async Task<Employee?> DeleteEmployeeAsync(Guid id)
         {

@@ -11,12 +11,12 @@ namespace WeGapApi.Repository
     {
 
         private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper; // Inject AutoMapper here
+       
 
-        public ExperienceRepository(ApplicationDbContext context, IMapper mapper)
+        public ExperienceRepository(ApplicationDbContext context)
         {
             _context = context;
-            _mapper = mapper;
+           
         }
 
         public async Task<Experience> AddExperienceAsync(Experience experience)

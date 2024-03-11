@@ -13,13 +13,13 @@ namespace WeGapApi.Data
 	public class EmployerRepository : IEmployerRepository
 	{
         private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper; // Inject AutoMapper here
+       
       
 
-        public EmployerRepository(ApplicationDbContext  context, IMapper mapper)
+        public EmployerRepository(ApplicationDbContext  context) 
         {
             _context = context;
-            _mapper = mapper;
+           
            
         }
 
