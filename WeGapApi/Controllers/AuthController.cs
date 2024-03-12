@@ -180,7 +180,14 @@ namespace WeGapApi.Controllers
                 _response.ErrorMessages = "Username or Password is Incorrect";
                 return BadRequest(_response);
             }
-
+            if (userFromDb.IsBlocked)
+            {
+                _response.Result = new LoginResponseDto();
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = "User Blocked, Please contact Adminstrator";
+                return BadRequest(_response);
+            }
 
            
 
