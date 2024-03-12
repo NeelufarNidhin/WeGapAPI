@@ -60,8 +60,7 @@ namespace WeGapApi.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
-            // var logins = user.Logins;
-            // var rolesForUser = await _userManager.GetRolesAsync(id);
+            
 
             if (user is null)
                 return NotFound();
@@ -80,25 +79,19 @@ namespace WeGapApi.Controllers
         {
             var user = await _userManager.FindByIdAsync(userId);
 
-            if (user.LockoutEnd != null && user.LockoutEnd > DateTime.Now)
+            if (user == null)
             {
-              
-                user.LockoutEnd = DateTime.Now;
-
+                throw new Exception($"User Not Found{ userId }");
             }
 
-            else
+            if (user != null)
             {
-                user.LockoutEnd = DateTime.Now.AddYears(1000);
+                user.IsBlocked = !user.IsBlocked;
+                await _userManager.UpdateAsync(user);
             }
-
-           
-            await _userManager.UpdateAsync(user);
 
             return Ok(user);
           
-
-
         }
 
     }
