@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using WeGapApi.Data;
 using WeGapApi.Models;
 using WeGapApi.Models.Dto;
+using WeGapApi.Services;
 using WeGapApi.Services.Services.Interface;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -39,7 +40,14 @@ namespace WeGapApi.Controllers
 
         }
 
+        [HttpGet("exists/{userId}")]
+        public async Task<IActionResult> EmployerExisits(string userId)
+        {
+            var employerDto = await _service.EmployerService.EmployerExists(userId);
 
+
+            return Ok(employerDto);
+        }
 
 
         [HttpGet]

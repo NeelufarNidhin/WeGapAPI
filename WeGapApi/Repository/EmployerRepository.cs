@@ -49,6 +49,12 @@ namespace WeGapApi.Data
             return employerfromDb;
         }
 
+        public async Task<Employer> EmployerExists(string id)
+        {
+            var user = await _context.Employers.FirstOrDefaultAsync(u => u.ApplicationUserId == id);
+            return user;
+        }
+
         public async Task<List<Employer>> GetAllEmployerAsync()
         {
             var employers = await _context.Employers.Include("ApplicationUser").ToListAsync();

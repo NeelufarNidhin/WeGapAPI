@@ -8,7 +8,7 @@ namespace WeGapApi.Services.Services.Interface
 	{
         Task<List<EmployerDto>> GetAllEmployerAsync();
         Task<EmployerDto> GetEmployerByIdAsync(Guid id);
-
+        Task<EmployerDto> EmployerExists(string id);
         Task<EmployerDto> AddEmployerAsync(AddEmployerDto employer);
         Task<EmployerDto?> UpdateEmployerAsync(Guid id, UpdateEmployerDto employer);
         Task<EmployerDto?> DeleteEmployerAsync(Guid id);
