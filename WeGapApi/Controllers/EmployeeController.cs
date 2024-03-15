@@ -36,6 +36,14 @@ namespace WeGapApi.Controllers
 
         }
 
+        [HttpGet("exists/{userId}")]
+        public async Task<IActionResult> EmployeeExisits(string userId)
+        {
+            var employeeDto = await _serviceManager.EmployeeService.EmployeeExists(userId);
+
+            
+            return Ok(employeeDto);
+        }
 
 
 

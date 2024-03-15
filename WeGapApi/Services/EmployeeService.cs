@@ -38,6 +38,13 @@ namespace WeGapApi.Services
 
         }
 
+        public  async Task<EmployeeDto> EmployeeExists(string id)
+        {
+            var employee = await _repositoryManager.Employee.EmployeeExists(id);
+            var employeeDto = _mapper.Map<EmployeeDto>(employee);
+            return employeeDto;
+        }
+
         public async  Task<List<EmployeeDto>> GetAllAsync()
         {
             var employees = await _repositoryManager.Employee.GetAllAsync();

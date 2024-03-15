@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 
 namespace WeGapApi.Models.Dto
 {
@@ -11,6 +12,7 @@ namespace WeGapApi.Models.Dto
         public string City { get; set; }
         public int Pincode { get; set; }
         public int MobileNumber { get; set; }
+        [IgnoreDataMember]
         public DateTime DOB { get; set; }
         public string ApplicationUserId { get; set; }
 

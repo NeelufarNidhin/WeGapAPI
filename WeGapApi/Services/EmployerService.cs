@@ -96,6 +96,13 @@ namespace WeGapApi.Services
            var employerDto =  _mapper.Map<EmployerDto>(employerDomain);
             return employerDto;
         }
+
+        public async Task<EmployerDto> EmployerExists(string id)
+        {
+            var employer =  await _repositoryManager.Employer.EmployerExists(id);
+            var employerDto = _mapper.Map<EmployerDto>(employer);
+            return employerDto;
+        }
     }
 }
 

@@ -12,6 +12,7 @@ namespace WeGapApi.Services.Services.Interface
         Task<EmployeeDto> AddEmployeeAsync(AddEmployeeDto employeeDto);
         Task<EmployeeDto?> UpdateEmployeeAsync(Guid id, UpdateEmployeeDto employeeDto);
         Task<EmployeeDto> DeleteEmployeeAsync(Guid id);
+        Task<EmployeeDto> EmployeeExists(string id);
 
     }
 }
