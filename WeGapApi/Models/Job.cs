@@ -1,9 +1,12 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+
 namespace WeGapApi.Models
 {
 	public class Job
 	{
         public Guid Id { get; set; }
+        [Required(ErrorMessage ="JobTitle is required")]
         public string JobTitle { get; set; }
         public string Description { get; set; }
         public string Experience { get; set; }
@@ -14,9 +17,10 @@ namespace WeGapApi.Models
         public Guid EmployerId { get; set; }
         public Employer Employer { get; set; }
 
+        [Required(ErrorMessage = "JobType is required")]
         public Guid JobTypeId { get; set; }
-  
 
+        [Required(ErrorMessage = "Jobskill is required")]
         public List<JobJobSkill> JobJobSkill { get; set; }
 
     }

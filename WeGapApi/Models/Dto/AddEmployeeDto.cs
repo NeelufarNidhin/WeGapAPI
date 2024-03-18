@@ -11,11 +11,11 @@ namespace WeGapApi.Models.Dto
         public string ApplicationUserId { get; set; }
         public DateTime DOB { get; set; }
         public string Gender { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Address is required")]
         public string Address { get; set; }
-        [Required]
+        [Required(ErrorMessage = "State is required")]
         public string State { get; set; }
-        [Required]
+        [Required(ErrorMessage = "city is required")]
         public string City { get; set; }
         public int Pincode { get; set; }
         public int MobileNumber { get; set; }

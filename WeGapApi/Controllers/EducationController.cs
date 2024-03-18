@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -25,11 +26,21 @@ namespace WeGapApi.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAllEducation()
+            
         {
-            var education = await _educationRepository.GetAllAsync();
-            var educationDto = _mapper.Map<List<EducationDto>>(education);
+            try
+            {
+                var education = await _educationRepository.GetAllAsync();
+                var educationDto = _mapper.Map<List<EducationDto>>(education);
 
-            return Ok(educationDto);
+                return Ok(educationDto);
+            }
+            catch (Exception ex)
+                {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching employees.");
+
+            }
+           
         }
 
         [HttpGet]

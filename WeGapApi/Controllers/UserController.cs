@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +10,7 @@ using Microsoft.VisualBasic;
 using WeGapApi.Data;
 using WeGapApi.Models;
 using WeGapApi.Models.Dto;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,17 +30,27 @@ namespace WeGapApi.Controllers
 
         [Authorize (Roles = "admin")]
         [HttpGet("getall")]
-        public Task<IActionResult> GetAll()
-        {
-            var users = _userRepository.GetUsers();
+        public async Task<IActionResult> GetAll()
 
-            return Task.FromResult<IActionResult>(Ok(users));
+        {
+            try
+            {
+                var users = _userRepository.GetUsers();
+
+                return Ok(users);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError," An error occurred while fetching user data");
+            }
+           
         }
 
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] UpdateDto updatedUser)
         {
+            try { 
             var user = _userRepository.GetUserById(id);
 
             if (user is null)
@@ -53,12 +65,18 @@ namespace WeGapApi.Controllers
             var result = await _userManager.UpdateAsync(user);
 
             return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while updating user data");
+            }
         }
 
         [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
+            try { 
             var user = await _userManager.FindByIdAsync(id);
             
 
@@ -66,31 +84,42 @@ namespace WeGapApi.Controllers
                 return NotFound();
 
 
-
-
-
             var result = await _userManager.DeleteAsync(user);
 
             return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while deleting user data");
+            }
         }
 
         [HttpPost("block/{userId}")]
         public async Task<IActionResult> ToggleUserAccountStatus(string userId)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user == null)
+            try
             {
-                throw new Exception($"User Not Found{ userId }");
-            }
+                var user = await _userManager.FindByIdAsync(userId);
 
-            if (user != null)
+                if (user == null)
+                {
+                    throw new Exception($"User Not Found{userId}");
+                }
+
+                if (user != null)
+                {
+                    user.IsBlocked = !user.IsBlocked;
+                    await _userManager.UpdateAsync(user);
+                }
+
+                return Ok(user);
+            }
+            catch (Exception ex)
             {
-                user.IsBlocked = !user.IsBlocked;
-                await _userManager.UpdateAsync(user);
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while blocking user");
             }
-
-            return Ok(user);
+        
+            
           
         }
 

@@ -34,20 +34,33 @@ namespace WeGapApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-
+            try{ 
             var employeeDto = await _serviceManager.EmployeeService.GetAllAsync();
 
             return Ok(employeeDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching employee data.");
+
+            }
 
         }
 
         [HttpGet("exists/{userId}")]
         public async Task<IActionResult> EmployeeExisits(string userId)
         {
+            try { 
             var employeeDto = await _serviceManager.EmployeeService.EmployeeExists(userId);
 
             
             return Ok(employeeDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while checking employee data.");
+
+            }
         }
 
 
@@ -55,13 +68,18 @@ namespace WeGapApi.Controllers
         [HttpGet("{id}", Name = "EmployeeById")]
         public async Task<IActionResult> GetEmployeeById(Guid id)
         {
-           
+            try
+            {
 
-          var employeeDto =  await  _serviceManager.EmployeeService.GetEmployeeByIdAsync(id);
-           
+                var employeeDto = await _serviceManager.EmployeeService.GetEmployeeByIdAsync(id);
 
-            return Ok(employeeDto);
+                return Ok(employeeDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching employee data.");
 
+            }
         }
        
         [HttpPost]
@@ -70,26 +88,27 @@ namespace WeGapApi.Controllers
         {
             try
             {
-                // if (ModelState.IsValid)
-                // {
-                //if (addEmployeeDto.Imagefile == null || addEmployeeDto.Imagefile.Length == 0)
-                //{
-                //    return BadRequest();
-                //}
+                if (ModelState.IsValid)
+                {
+                    //if (addEmployeeDto.Imagefile == null || addEmployeeDto.Imagefile.Length == 0)
+                    //{
+                    //    return BadRequest();
+                    //}
 
-                string fileName = $"{Guid.NewGuid()}{Path.GetExtension(addEmployeeDto.Imagefile.FileName)}";
+                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(addEmployeeDto.Imagefile.FileName)}";
                 addEmployeeDto.ImageName = await _blobService.UploadBlob(fileName, SD.Storage_Container, addEmployeeDto.Imagefile);
 
                 var employeeDto = _serviceManager.EmployeeService.AddEmployeeAsync(addEmployeeDto);
                     _response.Result = employeeDto;
                     _response.StatusCode = HttpStatusCode.Created;
                     return CreatedAtRoute("EmployeeById", new { id = employeeDto.Id }, employeeDto);
-                //}
-                //else
-                //{
-                //    _response.IsSuccess = false;
-                //    _response.ErrorMessages = "Add required fields";
-                //}
+                }
+                else
+                {
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages = "Add required fields";
+                    return BadRequest(_response);
+                }
 
             }
             catch (Exception ex)
@@ -97,9 +116,11 @@ namespace WeGapApi.Controllers
                 _response.IsSuccess = false;
                 _response.ErrorMessages = ex.ToString();
 
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while adding employee.");
+
             }
 
-            return Ok();
+          
 
            
         }
@@ -109,19 +130,32 @@ namespace WeGapApi.Controllers
         public async Task<IActionResult> UpdateEmployee(Guid id, [FromBody] UpdateEmployeeDto updateEmployeeDto)
         {
 
-          
+            try { 
 
             var employeeDto = await _serviceManager.EmployeeService.UpdateEmployeeAsync(id,updateEmployeeDto);
 
             return Ok(employeeDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching employee data.");
+
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(Guid id)
         {
+           try { 
           await  _serviceManager.EmployeeService.DeleteEmployeeAsync(id);
 
             return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching deleting data.");
+
+            }
         }
 
         
