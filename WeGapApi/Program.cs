@@ -14,6 +14,8 @@ using WeGapApi.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using WeGapApi.Services.Services.Interface;
 using WeGapApi.Services;
+using Azure.Storage.Blobs;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,7 +82,8 @@ builder.Services.AddScoped<IServiceManager, ServiceManager>();
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 //builder.Services.AddScoped<ILogger>();
 
-
+builder.Services.AddSingleton(u => new BlobServiceClient(builder.Configuration.GetConnectionString("StorageAccount")));
+builder.Services.AddSingleton<IBlobService, BlobService>();
 //Adding Authorization in swagger for JWTBearer Support
 builder.Services.AddSwaggerGen(options =>
 {

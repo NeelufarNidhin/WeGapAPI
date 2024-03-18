@@ -9,6 +9,7 @@ namespace WeGapApi.Models.Dto
         public string City { get; set; }
         public int Pincode { get; set; }
         public int MobileNumber { get; set; }
+        public IFormFile Imagefile { get; set; }
     }
 
 }

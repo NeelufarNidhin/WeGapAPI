@@ -4,24 +4,44 @@ using WeGapApi.Models;
 using WeGapApi.Models.Dto;
 using WeGapApi.Repository.Interface;
 using WeGapApi.Services.Services.Interface;
+using WeGapApi.Utility;
 
 namespace WeGapApi.Services
 {
-	public class EmployeeService : IEmployeeService
-	{
+    public class EmployeeService : IEmployeeService
+    {
         private readonly IRepositoryManager _repositoryManager;
         private readonly IMapper _mapper;
-        public EmployeeService(IRepositoryManager repositoryManager, IMapper mapper)
-		{
+        private readonly IBlobService _blobService;
+        public EmployeeService(IRepositoryManager repositoryManager, IMapper mapper, IBlobService blobService)
+        {
             _repositoryManager = repositoryManager;
             _mapper = mapper;
+            _blobService = blobService;
         }
 
         public async Task<EmployeeDto> AddEmployeeAsync(AddEmployeeDto addemployeeDto)
         {
-           
+
             var employeeDomain = _mapper.Map<Employee>(addemployeeDto);
-           // var userDomain = _repositoryManager.Employee.GetEmployeeByIdAsync;
+            // var userDomain = _repositoryManager.Employee.GetEmployeeByIdAsync;
+
+           
+
+            //Employee AddEmployee = new()
+            //{
+            //    ApplicationUserId = addemployeeDto.ApplicationUserId,
+            //    DOB = addemployeeDto.DOB,
+            //    Gender = addemployeeDto.Gender,
+            //    State = addemployeeDto.State,
+            //    Address = addemployeeDto.Address,
+            //    City = addemployeeDto.City,
+            //    Pincode = addemployeeDto.Pincode,
+            //    MobileNumber = addemployeeDto.MobileNumber,
+            //    Bio = addemployeeDto.Bio,
+            //    ImageName = await _blobService.UploadBlob(fileName, SD.Storage_Container, addemployeeDto.Imagefile)
+            //};
+            //  employeeDomain.ImageName = await _blobService.UploadBlob(fileName, SD.Storage_Container, addemployeeDto.Imagefile);
 
             _repositoryManager.Employee.AddEmployeeAsync(employeeDomain);
 

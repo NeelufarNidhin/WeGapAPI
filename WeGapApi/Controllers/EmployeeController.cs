@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using WeGapApi.Data;
 using WeGapApi.Models;
 using WeGapApi.Models.Dto;
 using WeGapApi.Services.Services.Interface;
+using WeGapApi.Utility;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,11 +20,14 @@ namespace WeGapApi.Controllers
     {
 
         private readonly IServiceManager _serviceManager;
-
-
-        public EmployeeController(IServiceManager serviceManager)
+        private readonly ApiResponse _response;
+        private readonly IBlobService _blobService;
+        public EmployeeController(IServiceManager serviceManager, IBlobService blobService)
         {
             _serviceManager = serviceManager;
+            _response = new ApiResponse();
+            _blobService = blobService;
+           
         }
 
 
@@ -60,14 +65,43 @@ namespace WeGapApi.Controllers
         }
        
         [HttpPost]
-        public async Task<IActionResult> AddEmployee([FromBody] AddEmployeeDto addEmployeeDto)
+        public async Task<IActionResult> AddEmployee([FromForm] AddEmployeeDto addEmployeeDto)
 
         {
+            try
+            {
+                // if (ModelState.IsValid)
+                // {
+                //if (addEmployeeDto.Imagefile == null || addEmployeeDto.Imagefile.Length == 0)
+                //{
+                //    return BadRequest();
+                //}
 
+                string fileName = $"{Guid.NewGuid()}{Path.GetExtension(addEmployeeDto.Imagefile.FileName)}";
+                addEmployeeDto.ImageName = await _blobService.UploadBlob(fileName, SD.Storage_Container, addEmployeeDto.Imagefile);
 
-            var employeeDto = _serviceManager.EmployeeService.AddEmployeeAsync(addEmployeeDto);
+                var employeeDto = _serviceManager.EmployeeService.AddEmployeeAsync(addEmployeeDto);
+                    _response.Result = employeeDto;
+                    _response.StatusCode = HttpStatusCode.Created;
+                    return CreatedAtRoute("EmployeeById", new { id = employeeDto.Id }, employeeDto);
+                //}
+                //else
+                //{
+                //    _response.IsSuccess = false;
+                //    _response.ErrorMessages = "Add required fields";
+                //}
 
-            return CreatedAtRoute("EmployeeById", new { id = employeeDto.Id }, employeeDto);
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = ex.ToString();
+
+            }
+
+            return Ok();
+
+           
         }
 
 
