@@ -22,6 +22,7 @@ namespace WeGapApi.Models
         [Required(ErrorMessage = "Mobile Number is a required !!")]
         public int MobileNumber { get; set; }
         public string Bio { get; set; }
+        
         public string ImageName { get; set; }
         public bool CreatedStatus { get; set; } = false;
         public DateTime CreateAt { get; set; } = DateTime.UtcNow;

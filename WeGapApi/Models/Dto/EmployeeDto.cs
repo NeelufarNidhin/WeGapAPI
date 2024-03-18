@@ -15,8 +15,11 @@ namespace WeGapApi.Models.Dto
         [IgnoreDataMember]
         public DateTime DOB { get; set; }
         public string ApplicationUserId { get; set; }
+        public string ImageName { get; set; }
 
-         public ApplicationUser ApplicationUser { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
+        [NotMapped]
+        public IFormFile Imagefile { get; set; }
     }
 }
 

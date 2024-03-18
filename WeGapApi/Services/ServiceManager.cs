@@ -19,10 +19,10 @@ namespace WeGapApi.Services
         private readonly Lazy<EducationService> _educationService;
         private readonly Lazy<ExperienceService> _experienceService;
 
-		public ServiceManager(IRepositoryManager repositoryManager,IMapper mapper, UserManager<ApplicationUser> userManager)
+		public ServiceManager(IRepositoryManager repositoryManager,IMapper mapper, UserManager<ApplicationUser> userManager,IBlobService blobService)
 		{
             _userService = new Lazy<IUserService>(() => new UserService(repositoryManager, mapper));
-            _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, mapper));
+            _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, mapper,blobService));
             _employerService = new Lazy<IEmployerService>(() => new EmployerService(repositoryManager, mapper));
             _educationService = new Lazy<EducationService>(() => new EducationService(repositoryManager, mapper));
             _experienceService = new Lazy<ExperienceService>(() => new ExperienceService(repositoryManager, mapper));
