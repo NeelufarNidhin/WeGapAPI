@@ -24,24 +24,7 @@ namespace WeGapApi.Services
         {
 
             var employeeDomain = _mapper.Map<Employee>(addemployeeDto);
-            // var userDomain = _repositoryManager.Employee.GetEmployeeByIdAsync;
-
-           
-
-            //Employee AddEmployee = new()
-            //{
-            //    ApplicationUserId = addemployeeDto.ApplicationUserId,
-            //    DOB = addemployeeDto.DOB,
-            //    Gender = addemployeeDto.Gender,
-            //    State = addemployeeDto.State,
-            //    Address = addemployeeDto.Address,
-            //    City = addemployeeDto.City,
-            //    Pincode = addemployeeDto.Pincode,
-            //    MobileNumber = addemployeeDto.MobileNumber,
-            //    Bio = addemployeeDto.Bio,
-            //    ImageName = await _blobService.UploadBlob(fileName, SD.Storage_Container, addemployeeDto.Imagefile)
-            //};
-            //  employeeDomain.ImageName = await _blobService.UploadBlob(fileName, SD.Storage_Container, addemployeeDto.Imagefile);
+            
 
             _repositoryManager.Employee.AddEmployeeAsync(employeeDomain);
 

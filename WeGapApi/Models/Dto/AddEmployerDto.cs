@@ -5,7 +5,7 @@ namespace WeGapApi.Models.Dto
 {
 	public class AddEmployerDto
 	{
-       
+        [Required(ErrorMessage = "Company Name is a required !!")]
         public string CompanyName { get; set; }
         public string ApplicationUserId { get; set; }
         public string Location { get; set; }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -32,9 +33,16 @@ namespace WeGapApi.Controllers
 
         public async Task<IActionResult> GetAllJobs()
         {
+            try { 
             var jobDto = await _service.JobService.GetAllJobsAsync();
 
             return Ok(jobDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching job data.");
+
+            }
 
 
         }
@@ -45,9 +53,16 @@ namespace WeGapApi.Controllers
 
         public async Task <IActionResult> GetJobById([FromRoute] Guid id)
         {
+            try { 
 
             var jobDto = await _service.JobService.GetJobsByIdAsync(id);
             return Ok(jobDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching job data.");
+
+            }
 
 
         }
@@ -56,29 +71,66 @@ namespace WeGapApi.Controllers
         [HttpPost]
         public async Task<IActionResult> AddJobs([FromBody] AddJobDto addJobDto)
         {
+            try {
+                if (ModelState.IsValid)
+                {
 
-            var jobDto = await _service.JobService.AddJobsAsync(addJobDto);
 
-                return CreatedAtAction(nameof(GetJobById), new { id = jobDto.Id }, jobDto);
-            
+                    var jobDto = await _service.JobService.AddJobsAsync(addJobDto);
+
+                    return CreatedAtAction(nameof(GetJobById), new { id = jobDto.Id }, jobDto);
+                }
+                else
+                {
+                    return BadRequest("Error occured while creating job ");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while adding job data.");
+
+            }
+
+
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateJob(Guid id, [FromBody] UpdateJobDto updateJobDto)
         {
+            try {
+                if (ModelState.IsValid)
+                {
 
-            var jobDto = await _service.JobService.UpdateJobsAsync(id, updateJobDto);
+                    var jobDto = await _service.JobService.UpdateJobsAsync(id, updateJobDto);
 
-            return Ok(jobDto);
+                    return Ok(jobDto);
+                }
+                else
+                {
+                    return BadRequest("Error occured while creating job ");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while updating job data.");
+
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteJob(Guid id)
         {
+            try { 
             var jobDto = await _service.JobService.DeleteJobsAsync(id);
                 
 
             return Ok(jobDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while updating job data.");
+
+            }
         }
     }
 }

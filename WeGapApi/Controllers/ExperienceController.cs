@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -29,8 +30,15 @@ namespace WeGapApi.Controllers
         public async Task<IActionResult> GetAllExperiences()
         {
 
+            try { 
           var experienceDto =  await _service.ExperienceService.GetAllExperienceAsync();
             return Ok(experienceDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching experience data.");
+
+            }
 
         }
 
@@ -41,9 +49,16 @@ namespace WeGapApi.Controllers
         [Route("{id}")]
         public async Task<IActionResult> GetExperienceById([FromRoute] Guid id)
         {
+            try { 
           var experienceDto = await _service.ExperienceService.GetExperienceByIdAsync(id);
 
             return Ok(experienceDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching experience data.");
+
+            }
 
         }
 
@@ -53,28 +68,47 @@ namespace WeGapApi.Controllers
         [HttpPost]
         public async Task<IActionResult> AddExperience([FromBody] AddExperienceDto addExperienceDto)
 
-        { 
-
+        {
+            try { 
            var experienceDto = await _service.ExperienceService.AddExperienceAsync(addExperienceDto);
 
             return CreatedAtAction(nameof(GetExperienceById), new { id = experienceDto.Id }, experienceDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while creating .");
+
+            }
         }
 
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateExperience(Guid id, [FromBody] UpdateExperienceDto updateExperienceDto)
         {
-
+            try { 
          var experienceDto =  await _service.ExperienceService.UpdateExperienceAsync(id, updateExperienceDto);
 
             return Ok(experienceDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while updating experience data.");
+
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteExperience(Guid id)
         {
+            try { 
             var experienceDto = await _service.ExperienceService.DeleteExperienceAsync(id);
             return Ok(experienceDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while deleting employer data.");
+
+            }
         }
 
 

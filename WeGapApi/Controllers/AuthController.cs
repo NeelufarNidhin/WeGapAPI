@@ -138,30 +138,30 @@ namespace WeGapApi.Controllers
 
         }
 
-        [HttpGet]
-        public async Task<IActionResult> TestEmail(string email)
-        {
+        //[HttpGet]
+        //public async Task<IActionResult> TestEmail(string email)
+        //{
 
-            var user = await _userManager.GetUserAsync(User);
-            string otp = GenerateRandomOtp();
+        //    var user = await _userManager.GetUserAsync(User);
+        //    string otp = GenerateRandomOtp();
 
-            await _emailSender.SendEmailAsync(email, "Confirm your email",
-            //   otp);
-                   $"Please confirm your account by <a href={otp}>clicking here</a>.");
-            _response.StatusCode = HttpStatusCode.OK;
-            _response.IsSuccess = true;
-            _response.Message = "Email Sent SuccessFully";
+        //    await _emailSender.SendEmailAsync(email, "Confirm your email",
+        //    //   otp);
+        //           $"Please confirm your account by <a href={otp}>clicking here</a>.");
+        //    _response.StatusCode = HttpStatusCode.OK;
+        //    _response.IsSuccess = true;
+        //    _response.Message = "Email Sent SuccessFully";
 
-            return Ok(_response);
-            // return (IActionResult)Task.FromResult(false);
+        //    return Ok(_response);
+        //    // return (IActionResult)Task.FromResult(false);
 
-        }
+        //}
 
-        private string GenerateRandomOtp()
-        {
-            Random random = new Random();
-            return random.Next(100000, 999999).ToString();
-        }
+        //private string GenerateRandomOtp()
+        //{
+        //    Random random = new Random();
+        //    return random.Next(100000, 999999).ToString();
+        //}
 
 
         [HttpPost("login")]

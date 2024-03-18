@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -27,10 +28,19 @@ namespace WeGapApi.Controllers
         [HttpGet]
 
         public async Task<IActionResult> GetAllJobSKill()
-        {
-            var jobSkillDto = await _service.JobSkillService.GetAllJobSkillAsync();
 
-            return Ok(jobSkillDto);
+        {
+            try
+            {
+                var jobSkillDto = await _service.JobSkillService.GetAllJobSkillAsync();
+
+                return Ok(jobSkillDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching Jobskill data");
+            }
+          
 
 
         }
@@ -42,10 +52,15 @@ namespace WeGapApi.Controllers
         public async Task<IActionResult> GetJobSkillById([FromRoute] Guid id)
         {
 
-
-            var jobSkillDto = await _service.JobSkillService.GetJobSkillByIdAsync(id);
-            return Ok(jobSkillDto);
-
+            try
+            {
+                var jobSkillDto = await _service.JobSkillService.GetJobSkillByIdAsync(id);
+                return Ok(jobSkillDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching Jobskill data");
+            }
 
         }
 
@@ -54,9 +69,23 @@ namespace WeGapApi.Controllers
         public async Task<IActionResult> AddJobSKill([FromBody] AddJobSkillDto addJobSkillDto)
         {
 
+            try
+            {
 
-            var jobSkillDto = await _service.JobSkillService.AddJobSkillAsync(addJobSkillDto);
-            return CreatedAtAction(nameof(GetJobSkillById), new { id = jobSkillDto.Id }, jobSkillDto);
+                if (ModelState.IsValid)
+                {
+                    var jobSkillDto = await _service.JobSkillService.AddJobSkillAsync(addJobSkillDto);
+                return CreatedAtAction(nameof(GetJobSkillById), new { id = jobSkillDto.Id }, jobSkillDto);
+                }
+                else
+                {
+                    return BadRequest("Please provide the valid details");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while adding Jobskill data");
+            }
         }
 
 
@@ -64,17 +93,38 @@ namespace WeGapApi.Controllers
         public async Task<IActionResult> UpdateSkillJob(Guid id, [FromBody] UpdateJobSkillDto updateJobSkillDto)
         {
 
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var jobSkillDto = await _service.JobSkillService.UpdateJobSkillAsync(id, updateJobSkillDto);
+                    return Ok(jobSkillDto);
+                }
+                else
+                {
+                    return BadRequest("Please provide the details");
+                }
 
-            var jobSkillDto = await _service.JobSkillService.UpdateJobSkillAsync(id, updateJobSkillDto);
-            return Ok(jobSkillDto);
+           
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while updating Jobskill data");
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteJobSKill(Guid id)
         {
-
+            try
+            {
             await _service.JobSkillService.DeleteJobSkillAsync(id);
             return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while deleting Jobskill data");
+            }
         }
     }
 }
