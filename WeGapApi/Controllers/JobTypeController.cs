@@ -69,15 +69,11 @@ namespace WeGapApi.Controllers
         {
 
             try {
-                if (ModelState.IsValid)
-                {
-                    var jobTypeDto = await _service.JobTypeService.AddJobTypeAsync(addJobTypeDto);
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                var jobTypeDto = await _service.JobTypeService.AddJobTypeAsync(addJobTypeDto);
                     return CreatedAtAction(nameof(GetJobTypeById), new { id = jobTypeDto.Id }, jobTypeDto);
-                }
-                else
-                {
-                    return BadRequest("Please check Job type credentials");
-                }
+                
            
             }
             catch (Exception ex)
@@ -93,17 +89,12 @@ namespace WeGapApi.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
-                {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-                    var jobTypeDto = await _service.JobTypeService.UpdateJobTypeAsync(id, updateJobTypeDto);
+                var jobTypeDto = await _service.JobTypeService.UpdateJobTypeAsync(id, updateJobTypeDto);
                     return Ok(jobTypeDto);
-                }
-                else
-                {
-                    return BadRequest("Please check Job type credentials");
-                }
-
+               
             }
             catch (Exception ex)
             {

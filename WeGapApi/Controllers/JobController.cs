@@ -72,18 +72,14 @@ namespace WeGapApi.Controllers
         public async Task<IActionResult> AddJobs([FromBody] AddJobDto addJobDto)
         {
             try {
-                if (ModelState.IsValid)
-                {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
 
-                    var jobDto = await _service.JobService.AddJobsAsync(addJobDto);
+                var jobDto = await _service.JobService.AddJobsAsync(addJobDto);
 
                     return CreatedAtAction(nameof(GetJobById), new { id = jobDto.Id }, jobDto);
-                }
-                else
-                {
-                    return BadRequest("Error occured while creating job ");
-                }
+                
             }
             catch (Exception ex)
             {
@@ -98,17 +94,13 @@ namespace WeGapApi.Controllers
         public async Task<IActionResult> UpdateJob(Guid id, [FromBody] UpdateJobDto updateJobDto)
         {
             try {
-                if (ModelState.IsValid)
-                {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-                    var jobDto = await _service.JobService.UpdateJobsAsync(id, updateJobDto);
+                var jobDto = await _service.JobService.UpdateJobsAsync(id, updateJobDto);
 
                     return Ok(jobDto);
-                }
-                else
-                {
-                    return BadRequest("Error occured while creating job ");
-                }
+                
             }
             catch (Exception ex)
             {

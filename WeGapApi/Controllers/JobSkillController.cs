@@ -72,15 +72,11 @@ namespace WeGapApi.Controllers
             try
             {
 
-                if (ModelState.IsValid)
-                {
-                    var jobSkillDto = await _service.JobSkillService.AddJobSkillAsync(addJobSkillDto);
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                var jobSkillDto = await _service.JobSkillService.AddJobSkillAsync(addJobSkillDto);
                 return CreatedAtAction(nameof(GetJobSkillById), new { id = jobSkillDto.Id }, jobSkillDto);
-                }
-                else
-                {
-                    return BadRequest("Please provide the valid details");
-                }
+               
             }
             catch (Exception ex)
             {

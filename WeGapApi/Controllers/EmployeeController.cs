@@ -88,27 +88,22 @@ namespace WeGapApi.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    //if (addEmployeeDto.Imagefile == null || addEmployeeDto.Imagefile.Length == 0)
-                    //{
-                    //    return BadRequest();
-                    //}
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(addEmployeeDto.Imagefile.FileName)}";
+                //if (addEmployeeDto.Imagefile == null || addEmployeeDto.Imagefile.Length == 0)
+                //{
+                //    return BadRequest();
+                //}
+
+                string fileName = $"{Guid.NewGuid()}{Path.GetExtension(addEmployeeDto.Imagefile.FileName)}";
                 addEmployeeDto.ImageName = await _blobService.UploadBlob(fileName, SD.Storage_Container, addEmployeeDto.Imagefile);
 
                 var employeeDto = _serviceManager.EmployeeService.AddEmployeeAsync(addEmployeeDto);
                     _response.Result = employeeDto;
                     _response.StatusCode = HttpStatusCode.Created;
                     return CreatedAtRoute("EmployeeById", new { id = employeeDto.Id }, employeeDto);
-                }
-                else
-                {
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages = "Add required fields";
-                    return BadRequest(_response);
-                }
+               
 
             }
             catch (Exception ex)
@@ -130,11 +125,13 @@ namespace WeGapApi.Controllers
         public async Task<IActionResult> UpdateEmployee(Guid id, [FromBody] UpdateEmployeeDto updateEmployeeDto)
         {
 
-            try { 
+            try {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            var employeeDto = await _serviceManager.EmployeeService.UpdateEmployeeAsync(id,updateEmployeeDto);
+                var employeeDto = await _serviceManager.EmployeeService.UpdateEmployeeAsync(id,updateEmployeeDto);
 
-            return Ok(employeeDto);
+                 return Ok(employeeDto);
             }
             catch (Exception ex)
             {

@@ -91,16 +91,14 @@ namespace WeGapApi.Controllers
 
         {
             try {
-                if (ModelState.IsValid)
-                {
-                    var employerDto = await _service.EmployerService.AddEmployerAsync(addEmployerDto);
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
+               
 
-                    return CreatedAtAction(nameof(GetEmployerById), new { id = employerDto.Id }, employerDto);
-                }
-                else{
-                    return BadRequest("Please chk the employer credentials");
-                }
+                var employerDto = await _service.EmployerService.AddEmployerAsync(addEmployerDto);
+                return CreatedAtAction(nameof(GetEmployerById), new { id = employerDto.Id }, employerDto);
+                
            
             }
             catch (Exception ex)
@@ -117,16 +115,12 @@ namespace WeGapApi.Controllers
 
             try
             {
-                if (ModelState.IsValid)
-                {
-                    var employerDto =await  _service.EmployerService.UpdateEmployerAsync(id, updateEmployerDto);
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                var employerDto =await  _service.EmployerService.UpdateEmployerAsync(id, updateEmployerDto);
 
                 return Ok(employerDto);
-                }
-                else
-                {
-                    return BadRequest("Please chk the employer credentials");
-                }
+                
 
             }
             catch (Exception ex)
