@@ -16,7 +16,19 @@ namespace WeGapApi.Repository
 
         public async Task<JobSkill> AddJobSkillAsync(JobSkill jobSkill)
         {
-            await _context.JobSkill.AddAsync(jobSkill);
+
+            var jobSkillfromDb = await _context.JobSkill.FirstOrDefaultAsync(u => u.SkillName == jobSkill.SkillName);
+
+
+            if(jobSkillfromDb != null)
+            {
+                throw new Exception("Job Skill name already exists");
+            }
+            else
+            {
+                await _context.JobSkill.AddAsync(jobSkill);
+            }
+           
 
             _context.SaveChanges();
             return jobSkill;

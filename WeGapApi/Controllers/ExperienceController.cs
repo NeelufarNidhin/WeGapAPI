@@ -69,10 +69,12 @@ namespace WeGapApi.Controllers
         public async Task<IActionResult> AddExperience([FromBody] AddExperienceDto addExperienceDto)
 
         {
-            try { 
-           var experienceDto = await _service.ExperienceService.AddExperienceAsync(addExperienceDto);
+            try {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                var experienceDto = await _service.ExperienceService.AddExperienceAsync(addExperienceDto);
 
-            return CreatedAtAction(nameof(GetExperienceById), new { id = experienceDto.Id }, experienceDto);
+                return CreatedAtAction(nameof(GetExperienceById), new { id = experienceDto.Id }, experienceDto);
             }
             catch (Exception ex)
             {

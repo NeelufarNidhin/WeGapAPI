@@ -54,6 +54,9 @@ namespace WeGapApi.Controllers
         {
             ApplicationUser userFromDb = _db.ApplicationUsers.FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
 
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             if (userFromDb != null)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;

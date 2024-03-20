@@ -25,6 +25,8 @@ namespace WeGapApi.Data
 
         public async Task<Employer> AddEmployerAsync(Employer employer)
         {
+
+
             await _context.Employers.AddAsync(employer);
 
 

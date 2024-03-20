@@ -21,8 +21,7 @@ namespace WeGapApi.Services
 
         public async Task<EmployerDto> AddEmployerAsync(AddEmployerDto addEmployerDto)
         {
-            //if (!ModelState.IsValid)
-            //    return BadRequest(ModelState);
+           
 
             var employerDomain = _mapper.Map<Employer>(addEmployerDto);
             //  var userDomain = _employerRepository.GetEmployerByIdAsync;

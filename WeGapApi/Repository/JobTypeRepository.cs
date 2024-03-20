@@ -16,6 +16,12 @@ namespace WeGapApi.Repository
 
         public async Task<JobType> AddJobTypeAsync(JobType jobType)
         {
+            var jobTypeFromDb = await _context.JobType.FirstOrDefaultAsync(u => u.JobTypeName == jobType.JobTypeName);
+
+            if(jobTypeFromDb != null)
+            {
+                throw new  Exception("Job Type already exists");
+            }
             await _context.JobType.AddAsync(jobType);
             _context.SaveChanges();
             return jobType;
