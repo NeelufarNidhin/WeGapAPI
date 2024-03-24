@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using WeGapApi.Data;
 using WeGapApi.Models;
+using WeGapApi.Models.Dto;
 using WeGapApi.Repository.Interface;
 
 namespace WeGapApi.Repository
@@ -50,6 +51,18 @@ namespace WeGapApi.Repository
            return  await _context.Education.FirstOrDefaultAsync(u => u.Id == id);
             
 
+        }
+
+        public async Task<List<Education>> GetEmployeeEducation(Guid id)
+        {
+            var education = _context.Education.Where(u => u.EmployeeId == id).ToList();
+
+            if (education is null)
+            {
+                throw new Exception("education not found");
+
+            }
+            return education;
         }
 
         public async Task<Education> UpdateEducationAsync(Guid id, Education education)

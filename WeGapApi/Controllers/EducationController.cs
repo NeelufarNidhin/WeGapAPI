@@ -4,40 +4,41 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WeGapApi.Models;
 using WeGapApi.Models.Dto;
 using WeGapApi.Repository.Interface;
+using WeGapApi.Services.Services.Interface;
+using WeGapApi.Utility;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WeGapApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = SD.Role_Employee)]
     public class EducationController : Controller
     {
-        public readonly IEducationRepository _educationRepository;
-        public IMapper _mapper;
-        public EducationController(IEducationRepository educationRepository, IMapper mapper)
+        public readonly IServiceManager _service;
+        public EducationController(IServiceManager service)
         {
-            _educationRepository = educationRepository;
-            _mapper = mapper;
+            _service= service;
         }
 
         [HttpGet]
+     //   [Authorize(Roles = SD.Role_Employee)]
         public async Task<IActionResult> GetAllEducation()
             
         {
             try
             {
-                var education = await _educationRepository.GetAllAsync();
-                var educationDto = _mapper.Map<List<EducationDto>>(education);
-
+               var educationDto = await  _service.EducationService.GetAllAsync();
                 return Ok(educationDto);
             }
             catch (Exception ex)
                 {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching employees.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
            
@@ -45,57 +46,92 @@ namespace WeGapApi.Controllers
 
         [HttpGet]
         [Route("{id}")]
+       // [Authorize(Roles = SD.Role_Employee)]
         public async Task<IActionResult> GetEducationById([FromRoute] Guid id)
         {
-            var education = await _educationRepository.GetEducationByIdAsync(id);
+            try
+            {
+                var educationDto = await _service.EducationService.GetEducationByIdAsync(id);
+                return Ok(educationDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }   
 
-            var educationDto = _mapper.Map<EducationDto>(education);
-
-            if (education is null)
-                return NotFound();
-
-            return Ok(educationDto);
+           
         }
 
 
+        [HttpGet("employee/{id}")]
+
+        //[Authorize(Roles = SD.Role_Employee)]
+        public async Task<IActionResult> GetEmployeeEducation(Guid id)
+        {
+            try
+            {
+                var educationDto = await _service.EducationService.GetEmployeeEducation(id);
+
+                return Ok(educationDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+
+            }
+
+        }
+
         [HttpPost]
+       // [Authorize(Roles = SD.Role_Employee)]
         public async Task<IActionResult> AddEducation([FromBody] AddEducationDto addEducationDto) 
         {
 
-          if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var educationDomain = _mapper.Map<Education>(addEducationDto);
-            await _educationRepository.AddEducationAsync(educationDomain);
-            var educationDto = _mapper.Map<EducationDto>(educationDomain);
-            return CreatedAtAction(nameof(GetEducationById), new { id = educationDto.Id }, educationDto);
+            try
+            {
+                var educationDto = await _service.EducationService.AddEducationAsync(addEducationDto);
+                return Ok(educationDto);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
-
+      //  [Authorize(Roles = SD.Role_Employee)]
         public async Task <IActionResult> UpdateEducation(Guid id , [FromBody] UpdateEducationDto updateEducationDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
 
-            var educationDomain = _mapper.Map<Education>(updateEducationDto);
-
-            await _educationRepository.UpdateEducationAsync( id,educationDomain);
-
-            var educationDto = _mapper.Map<EducationDto>(educationDomain);
-
-            return Ok(educationDto);
+                var educationDto = await _service.EducationService.UpdateEducationAsync(id,updateEducationDto);
+                if(educationDto is null)
+                {
+                    return BadRequest("" +
+                        "education cannot be null");
+                }
+                return Ok(educationDto);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
+       // [Authorize(Roles = SD.Role_Employee)]
         public async Task<IActionResult> DeleteEducation(Guid id)
         {
-            var educationDomain = await _educationRepository.DeleteEducationAsync(id);
-
-            if (educationDomain == null)
-                return NotFound();
-
-            return Ok(_mapper.Map<EducationDto>(educationDomain));
+            try
+            {
+                var educationDto = await _service.EducationService.DeleteEducationAsync(id);
+                return Ok(educationDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
     }

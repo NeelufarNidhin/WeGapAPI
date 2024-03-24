@@ -29,13 +29,17 @@ namespace WeGapApi.Repository
 
         public async Task<JobType> DeleteJobTypeAsync(Guid id)
         {
-            var jobfromDb = await _context.JobType.FirstOrDefaultAsync(x => x.Id == id);
+            var jobTypefromDb = await _context.JobType.FirstOrDefaultAsync(x => x.Id == id);
+            if (jobTypefromDb == null)
+            {
+                throw new Exception("Job Type not Found");
+            }
 
-            _context.JobType.Remove(jobfromDb);
+            _context.JobType.Remove(jobTypefromDb);
 
             await _context.SaveChangesAsync();
 
-            return jobfromDb;
+            return jobTypefromDb;
         }
 
         public async Task<List<JobType>> GetAllJobTypeAsync()
@@ -45,23 +49,29 @@ namespace WeGapApi.Repository
 
         public async Task<JobType> GetJobTypeByIdAsync(Guid id)
         {
-            return await _context.JobType.FirstOrDefaultAsync(x => x.Id == id);
+            var jobTypefromDb = await _context.JobType.FirstOrDefaultAsync(x => x.Id == id);
+            if (jobTypefromDb == null)
+            {
+                throw new Exception("Job Type not Found");
+            }
+            return jobTypefromDb;
         }
 
         public  async Task<JobType> UpdateJobTypeAsync(Guid id, JobType jobType)
         {
-            var jobfromDb = await _context.JobType.FirstOrDefaultAsync(x => x.Id == id);
+            var jobTypefromDb = await _context.JobType.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (jobfromDb == null)
+            if (jobTypefromDb == null)
             {
-                return null;
+                throw new Exception("Job Type not Found");
             }
-
-            jobfromDb.JobTypeName = jobType.JobTypeName;
            
-            _context.SaveChanges();
+                jobTypefromDb.JobTypeName = jobType.JobTypeName;
 
-            return jobfromDb;
+                _context.SaveChanges();
+           
+
+                return jobTypefromDb;
         }
     }
 }

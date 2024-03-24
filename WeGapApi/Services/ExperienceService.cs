@@ -20,11 +20,10 @@ namespace WeGapApi.Services
 
         public async Task<ExperienceDto> AddExperienceAsync(AddExperienceDto addExperienceDto)
         {
-            //if (!ModelState.IsValid)
-            //    return BadRequest(ModelState);
+            
 
             var experienceDomain = _mapper.Map<Experience>(addExperienceDto);
-            //var userDomain = _experienceRepository.GetExperienceByIdAsync;
+           
 
             var ExperienceDomain = await _repositoryManager.Experience.AddExperienceAsync(experienceDomain);
 
@@ -36,8 +35,7 @@ namespace WeGapApi.Services
         {
             var experinceDomain = await _repositoryManager.Experience.DeleteExperienceAsync(id);
 
-            //if (experinceDomain == null)
-            //    return NotFound();
+            
            var experienceDto =  _mapper.Map<ExperienceDto>(experinceDomain);
 
             return experienceDto;
@@ -60,16 +58,26 @@ namespace WeGapApi.Services
             //return DTO usimg Mapper
             var experienceDto = _mapper.Map<ExperienceDto>(experience);
 
-            //if (experience is null)
-            //    return NotFound();
+           
+            return experienceDto;
+        }
+
+        public async Task<List<ExperienceDto>> GetEmployeeExperience(Guid id)
+        {
+            //get data from Database
+            var experience = await _repositoryManager.Experience.GetEmployeeExperience(id);
+
+
+            //return DTO usimg Mapper
+            var experienceDto = _mapper.Map<List<ExperienceDto>>(experience);
+
+
             return experienceDto;
         }
 
         public async Task<ExperienceDto> UpdateExperienceAsync(Guid id, UpdateExperienceDto updateExperienceDto)
         {
-            ////validation
-            //if (!ModelState.IsValid)
-            //    return BadRequest(ModelState);
+           
 
 
             //Map DTO to Domain model
@@ -78,10 +86,7 @@ namespace WeGapApi.Services
             //check if experience exists
             experienceDomain = await _repositoryManager.Experience.UpdateExperienceAsync(id, experienceDomain);
 
-            //if (experienceDomain == null)
-            //    return NotFound();
-
-
+            
             var experienceDto = _mapper.Map<ExperienceDto>(experienceDomain);
             return experienceDto;
         }

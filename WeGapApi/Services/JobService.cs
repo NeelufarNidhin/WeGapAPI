@@ -36,8 +36,7 @@ namespace WeGapApi.Services
         {
             var jobDomain = await _repositoryManager.Job.DeleteJobsAsync(id);
 
-            //if (jobDomain == null)
-            //    return NotFound();
+            
             var jobDto = _mapper.Map<JobDto>(jobDomain);
             return jobDto;
         }
@@ -55,10 +54,7 @@ namespace WeGapApi.Services
             //obtain data
             var jobDomain = await _repositoryManager.Job.GetJobsByIdAsync(id);
 
-            //if (jobDomain == null)
-            //{
-            //    return NotFound();
-            //}
+            
 
             //mapping
             var jobDto = _mapper.Map<JobDto>(jobDomain);
@@ -68,9 +64,7 @@ namespace WeGapApi.Services
 
         public async Task<JobDto> UpdateJobsAsync(Guid id, UpdateJobDto updateJobDto)
         {
-            ////validation
-            //if (!ModelState.IsValid)
-            //    return BadRequest(ModelState);
+            
 
 
             //Map DTO to Domain model
@@ -79,9 +73,7 @@ namespace WeGapApi.Services
             //check if employee exists
             jobDomain = await _repositoryManager.Job.UpdateJobsAsync(id, jobDomain);
 
-            //if (jobDomain == null)
-            //    return NotFound();
-
+            
 
             var jobDto = _mapper.Map<JobDto>(jobDomain);
             return jobDto;

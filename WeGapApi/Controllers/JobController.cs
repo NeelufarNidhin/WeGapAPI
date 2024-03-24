@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -11,12 +12,14 @@ using WeGapApi.Models;
 using WeGapApi.Models.Dto;
 using WeGapApi.Repository.Interface;
 using WeGapApi.Services.Services.Interface;
+using WeGapApi.Utility;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WeGapApi.Controllers
 {
     [Route("api/[controller]")]
+  
     public class JobController : Controller
     {
 
@@ -30,7 +33,7 @@ namespace WeGapApi.Controllers
         }
 
         [HttpGet]
-
+        [Authorize(Roles = SD.Role_Employer +" ," + SD.Role_Employee)]
         public async Task<IActionResult> GetAllJobs()
         {
             try { 
@@ -40,7 +43,7 @@ namespace WeGapApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching job data.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
 
@@ -50,7 +53,7 @@ namespace WeGapApi.Controllers
 
         [HttpGet]
         [Route("{id}")]
-
+        [Authorize(Roles = SD.Role_Employer + " ," + SD.Role_Employee)]
         public async Task <IActionResult> GetJobById([FromRoute] Guid id)
         {
             try { 
@@ -60,7 +63,7 @@ namespace WeGapApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching job data.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
 
@@ -69,6 +72,7 @@ namespace WeGapApi.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = SD.Role_Employer)]
         public async Task<IActionResult> AddJobs([FromBody] AddJobDto addJobDto)
         {
             try {
@@ -83,7 +87,7 @@ namespace WeGapApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while adding job data.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
 
@@ -91,6 +95,7 @@ namespace WeGapApi.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = SD.Role_Employer)]
         public async Task<IActionResult> UpdateJob(Guid id, [FromBody] UpdateJobDto updateJobDto)
         {
             try {
@@ -104,12 +109,13 @@ namespace WeGapApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while updating job data.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = SD.Role_Employer)]
         public async Task<IActionResult> DeleteJob(Guid id)
         {
             try { 
@@ -120,7 +126,7 @@ namespace WeGapApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while updating job data.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
         }

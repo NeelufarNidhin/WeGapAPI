@@ -67,6 +67,8 @@ namespace WeGapApi.Services
 
         }
 
+       
+
         public async Task<EmployeeDto> UpdateEmployeeAsync(Guid id, UpdateEmployeeDto updateEmployeeDto)
         {
 
@@ -76,8 +78,7 @@ namespace WeGapApi.Services
             //check if employee exists
             employeeDomain = await _repositoryManager.Employee.UpdateEmployeeAsync(id, employeeDomain);
 
-            //if (employeeDomain == null)
-            //    return NotFound();
+           
 
 
             var employeeDto = _mapper.Map<EmployeeDto>(employeeDomain);

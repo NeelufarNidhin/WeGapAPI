@@ -20,8 +20,7 @@ namespace WeGapApi.Services
 
         public async Task<JobTypeDto> AddJobTypeAsync(AddJobTypeDto addJobTypeDto)
         {
-            //if (!ModelState.IsValid)
-            //    return BadRequest(ModelState);
+           
 
             var jobType = _mapper.Map<JobType>(addJobTypeDto);
 
@@ -47,10 +46,7 @@ namespace WeGapApi.Services
         {
             var jobTypeDomain = await _repositoryManager.JobType.GetJobTypeByIdAsync(id);
 
-            //if (jobTypeDomain == null)
-            //{
-            //    return NotFound();
-            //}
+            
 
             //mapping
             var jobTypeDto = _mapper.Map<JobTypeDto>(jobTypeDomain);
@@ -60,9 +56,7 @@ namespace WeGapApi.Services
         public async Task<JobTypeDto> UpdateJobTypeAsync(Guid id, UpdateJobTypeDto updateJobTypeDto)
         {
             ////validation
-            //if (!ModelState.IsValid)
-            //    return BadRequest(ModelState);
-
+           
 
             //Map DTO to Domain model
             var jobTypeDomain = _mapper.Map<JobType>(updateJobTypeDto);
@@ -70,9 +64,7 @@ namespace WeGapApi.Services
             //check if employee exists
             jobTypeDomain = await _repositoryManager.JobType.UpdateJobTypeAsync(id, jobTypeDomain);
 
-            //if (jobTypeDomain == null)
-            //    return NotFound();
-
+          
 
             var jobTypeDto = _mapper.Map<JobTypeDto>(jobTypeDomain);
             return jobTypeDto;
@@ -82,8 +74,7 @@ namespace WeGapApi.Services
         {
             var jobTypeDomain = await _repositoryManager.JobType.DeleteJobTypeAsync(id);
 
-            //if (jobTypeDomain == null)
-            //    return NotFound();
+            
 
          var jobTypeDto =    _mapper.Map<JobTypeDto>(jobTypeDomain);
             return jobTypeDto;

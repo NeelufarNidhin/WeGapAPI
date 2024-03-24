@@ -9,7 +9,7 @@ namespace WeGapApi.Data
         Task <List<Employee>> GetAllAsync();
         Task<Employee> GetEmployeeByIdAsync(Guid id);
         Task<Employee> EmployeeExists(string id);
-        void AddEmployeeAsync(Employee employee);
+        Task<Employee> AddEmployeeAsync(Employee employee);
         Task<Employee?> UpdateEmployeeAsync(Guid id, Employee employee);
         Task<Employee?> DeleteEmployeeAsync(Guid id);
         

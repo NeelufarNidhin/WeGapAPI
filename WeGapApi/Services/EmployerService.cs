@@ -89,8 +89,7 @@ namespace WeGapApi.Services
         {
             var employerDomain = await _repositoryManager.Employer.DeleteEmployerAsync(id);
 
-            //if (employerDomain == null)
-            //    return NotFound();
+            
 
            var employerDto =  _mapper.Map<EmployerDto>(employerDomain);
             return employerDto;

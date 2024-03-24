@@ -24,12 +24,8 @@ namespace WeGapApi.Repository
             {
                 throw new Exception("Job Skill name already exists");
             }
-            else
-            {
-                await _context.JobSkill.AddAsync(jobSkill);
-            }
-           
 
+            await _context.JobSkill.AddAsync(jobSkill);
             _context.SaveChanges();
             return jobSkill;
         }
@@ -37,6 +33,10 @@ namespace WeGapApi.Repository
         public async Task<JobSkill> DeleteJobSkillAsync(Guid id)
         {
             var jobSkillfromDb = await _context.JobSkill.FirstOrDefaultAsync(x => x.Id == id);
+            if (jobSkillfromDb == null)
+            {
+                throw new Exception("Job skill not Found");
+            }
 
             _context.JobSkill.Remove(jobSkillfromDb);
 
@@ -52,7 +52,13 @@ namespace WeGapApi.Repository
 
         public async Task<JobSkill> GetJobSkillByIdAsync(Guid id)
         {
-            return await _context.JobSkill.FirstOrDefaultAsync(x => x.Id == id);
+            var jobSkillfromDb = await _context.JobSkill.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (jobSkillfromDb == null)
+            {
+                throw new Exception("Job skill not Found");
+            }
+            return jobSkillfromDb;
         }
 
         public async Task<JobSkill> UpdateJobSkillAsync(Guid id, JobSkill jobSkill)
@@ -61,7 +67,7 @@ namespace WeGapApi.Repository
 
             if (jobSkillfromDb == null)
             {
-                return null;
+                throw new Exception("Job skill not Found");
             }
 
             jobSkillfromDb.SkillName = jobSkill.SkillName;

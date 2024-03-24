@@ -26,12 +26,14 @@ namespace WeGapApi.Data
         public async Task<Employer> AddEmployerAsync(Employer employer)
         {
 
+            var employeeFromDb = _context.Employers.FirstOrDefault(x => x.CompanyName == employer.CompanyName);
 
+            if(employeeFromDb is not null)
+            {
+                throw new Exception("Company Name alreay exists");
+            }
             await _context.Employers.AddAsync(employer);
-
-
-            var userFromDb = _context.ApplicationUsers.FirstOrDefault(x => x.Id == employer.ApplicationUserId);
-            userFromDb.IsProfile = true;
+            
             _context.SaveChanges();
             return employer;
         }
@@ -42,8 +44,8 @@ namespace WeGapApi.Data
 
 
             if (employerfromDb == null)
-            { 
-                return null;
+            {
+                throw new Exception("Employer doesn't exists");
             }
 
             _context.Employers.Remove(employerfromDb);
@@ -66,7 +68,14 @@ namespace WeGapApi.Data
 
         public async Task<Employer> GetEmployerByIdAsync(Guid id)
         {
-            return await _context.Employers.FirstOrDefaultAsync(x => x.Id == id);
+           var employerFromDb= await _context.Employers.FirstOrDefaultAsync(x => x.Id == id);
+            if (employerFromDb == null)
+            {
+                throw new Exception("Employer doesn't exists");
+            }
+
+            return employerFromDb;
+
         }
 
         public async Task<Employer?> UpdateEmployerAsync(Guid id, Employer employer)
@@ -76,15 +85,16 @@ namespace WeGapApi.Data
 
             if (employerfromDb == null)
             {
-                return null;
+                throw new Exception("Employer doesn't exists");
+
             }
 
-            employerfromDb.CompanyName = employer.CompanyName;
-            employerfromDb.Description = employer.Description;
-            employerfromDb.Location = employer.Location;
-            employerfromDb.Website = employer.Website;
-           
+            //employerfromDb.CompanyName = employer.CompanyName;
+            //employerfromDb.Description = employer.Description;
+            //employerfromDb.Location = employer.Location;
+            //employerfromDb.Website = employer.Website;
 
+            _context.Employers.Update(employer);
             _context.SaveChanges();
             return employerfromDb;
         }

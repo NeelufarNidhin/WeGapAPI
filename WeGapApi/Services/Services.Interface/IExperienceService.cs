@@ -11,6 +11,7 @@ namespace WeGapApi.Services.Services.Interface
         Task<ExperienceDto> AddExperienceAsync(AddExperienceDto experience);
         Task<ExperienceDto?> UpdateExperienceAsync(Guid id, UpdateExperienceDto experience);
         Task<ExperienceDto?> DeleteExperienceAsync(Guid id);
+        Task<List<ExperienceDto>> GetEmployeeExperience(Guid id);
     }
 }
 
