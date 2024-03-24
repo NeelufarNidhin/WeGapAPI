@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WeGapApi.Data;
 using WeGapApi.Models;
@@ -16,6 +17,7 @@ using WeGapApi.Utility;
 namespace WeGapApi.Controllers
 {
     [Route("api/[controller]")]
+ 
     public class EmployeeController : Controller
     {
 
@@ -32,6 +34,8 @@ namespace WeGapApi.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = SD.Role_Employee + ", " + SD.Role_Employer)]
+
         public async Task<IActionResult> GetAll()
         {
             try{ 
@@ -41,13 +45,14 @@ namespace WeGapApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching employee data.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
 
         }
 
         [HttpGet("exists/{userId}")]
+        [Authorize(Roles = SD.Role_Employee)]
         public async Task<IActionResult> EmployeeExisits(string userId)
         {
             try { 
@@ -58,7 +63,7 @@ namespace WeGapApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while checking employee data.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
         }
@@ -66,6 +71,8 @@ namespace WeGapApi.Controllers
 
 
         [HttpGet("{id}", Name = "EmployeeById")]
+        [Authorize(Roles = SD.Role_Employee + ", " + SD.Role_Employer)]
+
         public async Task<IActionResult> GetEmployeeById(Guid id)
         {
             try
@@ -77,12 +84,13 @@ namespace WeGapApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching employee data.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
         }
        
         [HttpPost]
+        [Authorize(Roles = SD.Role_Employee)]
         public async Task<IActionResult> AddEmployee([FromForm] AddEmployeeDto addEmployeeDto)
 
         {
@@ -111,7 +119,7 @@ namespace WeGapApi.Controllers
                 _response.IsSuccess = false;
                 _response.ErrorMessages = ex.ToString();
 
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while adding employee.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
 
@@ -122,6 +130,7 @@ namespace WeGapApi.Controllers
 
 
         [HttpPut("{id}")]
+        [Authorize(Roles = SD.Role_Employee)]
         public async Task<IActionResult> UpdateEmployee(Guid id, [FromBody] UpdateEmployeeDto updateEmployeeDto)
         {
 
@@ -135,12 +144,13 @@ namespace WeGapApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching employee data.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = SD.Role_Employee)]
         public async Task<IActionResult> DeleteEmployee(Guid id)
         {
            try { 
@@ -150,7 +160,7 @@ namespace WeGapApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching deleting data.");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
         }

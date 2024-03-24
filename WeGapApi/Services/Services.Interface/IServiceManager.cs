@@ -10,7 +10,8 @@ namespace WeGapApi.Services.Services.Interface
 		IExperienceService ExperienceService { get; }
 		IJobService JobService { get; }
 		IJobSkillService JobSkillService { get; }
-		IJobTypeService JobTypeService { get; }
+        ISkillService SkillService { get; }
+        IJobTypeService JobTypeService { get; }
 
 	}
 }

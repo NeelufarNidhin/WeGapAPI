@@ -13,20 +13,21 @@ namespace WeGapApi.Data
             _db = db;
         }
 
-        public ApplicationUser Create(ApplicationUser user)
-        {
-            throw new NotImplementedException();
-        }
+       
 
-        public List<ApplicationUser> GetUsers()
+        public  List<ApplicationUser> GetUsers()
         {
-            var users = _db.Users.ToList();
-            return users.ToList();
+            var users =  _db.ApplicationUsers.ToList();
+            return users;
         }
 
         public ApplicationUser GetUserById(string id)
         {
-            var user = _db.Users.FirstOrDefault(x => x.Id == id);
+            var user = _db.ApplicationUsers.FirstOrDefault(x => x.Id == id);
+            if(user is null)
+            {
+                throw new Exception("User Not Found");
+            }
 
             return user;
 
@@ -43,40 +44,47 @@ namespace WeGapApi.Data
 
 
 
-        public ApplicationUser GetByUserName(string userName)
-        {
-            throw new NotImplementedException();
-        }
 
-        public ApplicationUser Update(string id)
-        {
-            var user = _db.ApplicationUsers.FirstOrDefault(x => x.Id == id);
 
-            return user;
+        public ApplicationUser UpdateUser(string id, ApplicationUser user)
+        {
+            var userFromDb = _db.ApplicationUsers.FirstOrDefault(x => x.Id == id);
+            if(userFromDb is null)
+            {
+                throw new Exception("User Not Found");
+            }
+            _db.ApplicationUsers.Update(user);
+            _db.SaveChanges();
+            return userFromDb;
         }
 
         public ApplicationUser BlockUnblock(string id)
         {
             var userFromDb = _db.ApplicationUsers.FirstOrDefault(u => u.Id == id);
-            //if (userFromDb == null)
-            //{
-            //    return Json(new { success = false, message = "Error while Opertaion" });
-            //}
-            if (userFromDb.LockoutEnd != null && userFromDb.LockoutEnd > DateTime.Now)
+            if (userFromDb is null)
             {
-                //unlock if locked
-                userFromDb.LockoutEnd = DateTime.Now;
+                throw new Exception("User Not Found");
             }
-            else
-            {
-                userFromDb.LockoutEnd = DateTime.Now.AddYears(1000);
-            }
+
+            userFromDb.IsBlocked = !userFromDb.IsBlocked;
             _db.ApplicationUsers.Update(userFromDb);
             _db.SaveChanges();
 
             return userFromDb;
 
-           // return Json(new { success = true, message = "Operation Successfull" });
+           
+        }
+
+        public ApplicationUser DeleteUser(string id)
+        {
+            var userFromDb = _db.ApplicationUsers.FirstOrDefault(u => u.Id == id);
+            if (userFromDb is null)
+            {
+                throw new Exception("User Not Found");
+            }
+
+            _db.ApplicationUsers.Remove(userFromDb);
+            return userFromDb;
         }
     }
 

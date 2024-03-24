@@ -22,16 +22,18 @@ namespace WeGapApi.Data
            
         }
 
-        public void AddEmployeeAsync(Employee employee)
+        public async Task<Employee> AddEmployeeAsync(Employee employee)
         {
-              _context.Employees.AddAsync(employee);
+            if(employee is null)
+            {
+                throw new Exception("Employee not found");
+            }
 
+           await _context.Employees.AddAsync(employee);
+           await _context.SaveChangesAsync();
 
-            var userFromDb = _context.ApplicationUsers.FirstOrDefault(x => x.Id == employee.ApplicationUserId);
-            employee.CreatedStatus = true;
-            userFromDb.IsProfile = true;
-            _context.SaveChanges();
-           
+            return employee;
+
         }
 
 
@@ -44,7 +46,7 @@ namespace WeGapApi.Data
 
             if (employeefromDb == null)
             {
-                return null;
+                throw new Exception("Employee not found");
             }
 
            _context.Employees.Remove(employeefromDb);
@@ -64,12 +66,25 @@ namespace WeGapApi.Data
 
         public async Task<Employee> GetEmployeeByIdAsync(Guid id)
         {
-            return await _context.Employees.Include("ApplicationUser").FirstOrDefaultAsync(x => x.Id == id);
+            var employeefromDb = await _context.Employees.FirstOrDefaultAsync(x => x.Id == id);
+
+
+            if (employeefromDb == null)
+            {
+                throw new Exception("Employee not found");
+            }
+
+            return employeefromDb;
         }
 
         public async Task<Employee> EmployeeExists (string id)
         {
             var user = _context.Employees.FirstOrDefault(u => u.ApplicationUserId == id);
+
+            if(user is null)
+            {
+                throw new Exception("User not found");
+            }
             return user;
         }
 
@@ -80,16 +95,16 @@ namespace WeGapApi.Data
 
             if(employeefromDb == null)
             {
-                return null;
+                throw new Exception("Employee not found");
             }
 
-            employeefromDb.Address = employee.Address;
-            employeefromDb.City = employee.City;
-            employeefromDb.DOB = employee.DOB;
-            employeefromDb.MobileNumber = employee.MobileNumber;
-            employeefromDb.Pincode = employee.Pincode;
-            employeefromDb.State = employee.State;
-
+            //employeefromDb.Address = employee.Address;
+            //employeefromDb.City = employee.City;
+            //employeefromDb.DOB = employee.DOB;
+            //employeefromDb.MobileNumber = employee.MobileNumber;
+            //employeefromDb.Pincode = employee.Pincode;
+            //employeefromDb.State = employee.State;
+            _context.Employees.Update(employee);
             _context.SaveChanges();
             return employeefromDb;
 

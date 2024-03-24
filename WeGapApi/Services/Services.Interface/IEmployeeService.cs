@@ -4,8 +4,8 @@ using WeGapApi.Models.Dto;
 
 namespace WeGapApi.Services.Services.Interface
 {
-	public interface IEmployeeService
-	{
+    public interface IEmployeeService
+    {
         Task<List<EmployeeDto>> GetAllAsync();
         Task<EmployeeDto> GetEmployeeByIdAsync(Guid id);
 
@@ -13,7 +13,6 @@ namespace WeGapApi.Services.Services.Interface
         Task<EmployeeDto?> UpdateEmployeeAsync(Guid id, UpdateEmployeeDto employeeDto);
         Task<EmployeeDto> DeleteEmployeeAsync(Guid id);
         Task<EmployeeDto> EmployeeExists(string id);
-
     }
 }
 

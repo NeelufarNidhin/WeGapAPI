@@ -18,7 +18,7 @@ namespace WeGapApi.Repository
         {
           await _context.Jobs.AddAsync(job);
            
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
 
             foreach (var jobSkillId in job.JobJobSkill.Select(jjs => jjs.JobSkillId))
             {
@@ -29,7 +29,8 @@ namespace WeGapApi.Repository
                 };
 
                 // Add the new JobJobSkill entry to the context
-                await _context.JobJobSkill.AddAsync(jobJobSkill);
+                _context.JobJobSkill.Add(jobJobSkill);
+               
             }
 
             // Save changes after adding all JobJobSkill entries
@@ -40,6 +41,10 @@ namespace WeGapApi.Repository
         public async Task<Job> DeleteJobsAsync(Guid id)
         {
             var jobfromDb = await _context.Jobs.FirstOrDefaultAsync(x => x.Id == id);
+            if(jobfromDb is null)
+            {
+                throw new Exception("Job Not found");
+            }
 
             _context.Jobs.Remove(jobfromDb);
 
@@ -55,7 +60,12 @@ namespace WeGapApi.Repository
 
         public async Task<Job> GetJobsByIdAsync(Guid id)
         {
-            return await _context.Jobs.FirstOrDefaultAsync(x => x.Id == id);
+            var jobfromDb = await _context.Jobs.FirstOrDefaultAsync(x => x.Id == id);
+            if (jobfromDb is null)
+            {
+                throw new Exception("Job Not found");
+            }
+            return jobfromDb;
         }
 
         public async Task<Job> UpdateJobsAsync(Guid id, Job job)
@@ -64,13 +74,14 @@ namespace WeGapApi.Repository
 
             if(jobfromDb == null)
             {
-                return null;
+                throw new Exception("Job Not found");
             }
 
-            jobfromDb.JobTitle = job.JobTitle;
-            jobfromDb.Description = job.Description;
+            //jobfromDb.JobTitle = job.JobTitle;
+            //jobfromDb.Description = job.Description;
+            _context.Jobs.Update(job);
 
-            _context.SaveChanges();
+           await _context.SaveChangesAsync();
 
             return jobfromDb;
         }

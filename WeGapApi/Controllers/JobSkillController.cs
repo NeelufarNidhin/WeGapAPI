@@ -4,17 +4,20 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WeGapApi.Models;
 using WeGapApi.Models.Dto;
 using WeGapApi.Repository.Interface;
 using WeGapApi.Services.Services.Interface;
+using WeGapApi.Utility;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WeGapApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class JobSkillController : Controller
     {
         private readonly IServiceManager _service;
@@ -26,7 +29,7 @@ namespace WeGapApi.Controllers
         }
 
         [HttpGet]
-
+        [Authorize(Roles = SD.Role_Admin)]
         public async Task<IActionResult> GetAllJobSKill()
 
         {
@@ -38,7 +41,7 @@ namespace WeGapApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching Jobskill data");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
           
 
@@ -48,7 +51,7 @@ namespace WeGapApi.Controllers
 
         [HttpGet]
         [Route("{id}")]
-
+        [Authorize(Roles = SD.Role_Admin)]
         public async Task<IActionResult> GetJobSkillById([FromRoute] Guid id)
         {
 
@@ -59,13 +62,14 @@ namespace WeGapApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while fetching Jobskill data");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
 
         }
 
 
         [HttpPost]
+        [Authorize(Roles = SD.Role_Admin)]
         public async Task<IActionResult> AddJobSKill([FromBody] AddJobSkillDto addJobSkillDto)
         {
 
@@ -80,36 +84,38 @@ namespace WeGapApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while adding Jobskill data");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
 
         [HttpPut("{id}")]
+        [Authorize(Roles = SD.Role_Admin)]
         public async Task<IActionResult> UpdateSkillJob(Guid id, [FromBody] UpdateJobSkillDto updateJobSkillDto)
         {
 
             try
             {
-                if (ModelState.IsValid)
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                
+                else
                 {
                     var jobSkillDto = await _service.JobSkillService.UpdateJobSkillAsync(id, updateJobSkillDto);
                     return Ok(jobSkillDto);
-                }
-                else
-                {
-                    return BadRequest("Please provide the details");
                 }
 
            
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while updating Jobskill data");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = SD.Role_Admin)]
         public async Task<IActionResult> DeleteJobSKill(Guid id)
         {
             try
@@ -119,7 +125,7 @@ namespace WeGapApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while deleting Jobskill data");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
     }

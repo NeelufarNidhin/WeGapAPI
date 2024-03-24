@@ -21,10 +21,14 @@ namespace WeGapApi.Repository
 
         public async Task<Experience> AddExperienceAsync(Experience experience)
         {
+             var userFromDb = _context.Experience.FirstOrDefault(x => x.CompanyName == experience.CompanyName);
+            {
+                if(userFromDb is not null )
+                {
+                    throw new Exception("Experience Already Exists");
+                }
+            }
             await _context.Experience.AddAsync(experience);
-
-
-           // var userFromDb = _context.ApplicationUsers.FirstOrDefault(x => x.Id == employer.ApplicationUserId);
 
             _context.SaveChanges();
             return experience;
@@ -37,12 +41,24 @@ namespace WeGapApi.Repository
 
             if (experiencefromDb == null)
             {
-                return null;
+                throw new Exception("Experience Not found");
             }
 
             _context.Experience.Remove(experiencefromDb);
             await _context.SaveChangesAsync();
             return experiencefromDb;
+        }
+
+        public async Task<List<Experience>> GetEmployeeExperience( Guid id)
+        {
+            var experience = _context.Experience.Where(u => u.EmployeeId == id).ToList();
+
+            if (experience is null)
+            {
+                throw new Exception("experince not found");
+
+            }
+            return experience;
         }
 
         public async Task<List<Experience>> GetAllExperienceAsync()
@@ -64,16 +80,17 @@ namespace WeGapApi.Repository
 
             if (experiencefromDb == null)
             {
-                return null;
+                throw new Exception("Experience Not found");
             }
 
-            experiencefromDb.CurrentJobTitle = experience.CurrentJobTitle;
-            experiencefromDb.CompanyName = experience.CompanyName;
-            experiencefromDb.Starting_Date = experience.Starting_Date;
-            experiencefromDb.CompletionDate = experience.CompletionDate;
-            experiencefromDb.IsWorking = experience.IsWorking;
-            experiencefromDb.Description = experience.Description;
-
+            //experiencefromDb.CurrentJobTitle = experience.CurrentJobTitle;
+            //experiencefromDb.CompanyName = experience.CompanyName;
+            //experiencefromDb.Starting_Date = experience.Starting_Date;
+            //experiencefromDb.CompletionDate = experience.CompletionDate;
+            //experiencefromDb.IsWorking = experience.IsWorking;
+            //experiencefromDb.Description = experience.Description;
+             _context.Experience.Update(experience);
+ 
 
             _context.SaveChanges();
             return experiencefromDb;

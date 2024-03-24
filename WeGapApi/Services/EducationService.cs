@@ -21,12 +21,25 @@ namespace WeGapApi.Services
         {
 
             var educationDomain = _mapper.Map<Education>(addEducationDto);
-          
-            _repositoryManager.Education.AddEducationAsync(educationDomain);
+
+             _repositoryManager.Education.AddEducationAsync(educationDomain);
 
             var educationDto = _mapper.Map<EducationDto>(educationDomain);
             return educationDto;
 
+        }
+
+        public async Task<List<EducationDto>> GetEmployeeEducation(Guid id)
+        {
+            //get data from Database
+            var education = await _repositoryManager.Education.GetEmployeeEducation(id);
+
+
+            //return DTO usimg Mapper
+            var educationDto = _mapper.Map<List<EducationDto>>(education);
+
+
+            return educationDto;
         }
 
         public async Task<EducationDto> DeleteEducationAsync(Guid id)
@@ -67,8 +80,7 @@ namespace WeGapApi.Services
             //check if education exists
             educationDomain = await _repositoryManager.Education.UpdateEducationAsync(id, educationDomain);
 
-            //if (educationDomain == null)
-            //    return NotFound();
+            
 
 
             var educationDto = _mapper.Map<EducationDto>(educationDomain);

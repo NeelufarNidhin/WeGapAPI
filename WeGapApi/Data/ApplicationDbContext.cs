@@ -22,6 +22,7 @@ namespace WeGapApi.Data
         public DbSet<JobSkill> JobSkill { get; set; }
         //public DbSet<OTPRecord> OTPRecord { get; set; }
         public DbSet<JobJobSkill> JobJobSkill { get; set; }
+        public DbSet<Skill>Skill { get; set; }
     }
 
 

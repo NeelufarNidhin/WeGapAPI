@@ -10,6 +10,8 @@ using Microsoft.VisualBasic;
 using WeGapApi.Data;
 using WeGapApi.Models;
 using WeGapApi.Models.Dto;
+using WeGapApi.Services.Services.Interface;
+using WeGapApi.Utility;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,106 +19,85 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace WeGapApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class UserController : Controller
     {
-        public readonly IUserRepository _userRepository;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserController(IUserRepository userRepository, UserManager<ApplicationUser> userManager)
+        private readonly IServiceManager _service;
+        
+
+        public UserController(IServiceManager service)
         {
-            _userRepository = userRepository;
-            _userManager = userManager;
+            _service = service;
         }
 
-        [Authorize (Roles = "admin")]
-        [HttpGet("getall")]
-        public async Task<IActionResult> GetAll()
+        
+        [HttpGet()]
+        [Authorize(Roles = SD.Role_Admin)]
+        public async Task<IActionResult> GetAllUser()
 
         {
             try
             {
-                var users = _userRepository.GetUsers();
+                var users = _service.UserService.GetAllUsers();
 
                 return Ok(users);
             }
             catch(Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError," An error occurred while fetching user data");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
            
         }
 
-        [Authorize(Roles = "admin")]
+       
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] UpdateDto updatedUser)
+       [Authorize(Roles = SD.Role_Admin)]
+        public async Task<IActionResult> Update(string id, [FromBody] UpdateUserDto updatedUser)
         {
-            try { 
-            var user = _userRepository.GetUserById(id);
-
-            if (user is null)
-                return NotFound();
-
-
-            user.FirstName = updatedUser.FirstName;
-            user.LastName = updatedUser.LastName;
-
-
-
-            var result = await _userManager.UpdateAsync(user);
-
-            return Ok(result);
+            try
+            {
+               
+               var userDto = await _service.UserService.UpdateUser(id,updatedUser);
+                return Ok(userDto);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while updating user data");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
+
+            
         }
 
-        [Authorize(Roles = "admin")]
+      
         [HttpDelete("{id}")]
+        [Authorize(Roles = SD.Role_Admin)]
         public async Task<IActionResult> Delete(string id)
         {
-            try { 
-            var user = await _userManager.FindByIdAsync(id);
-            
+            try {
+                var userDto = await _service.UserService.DeleteUser(id);
 
-            if (user is null)
-                return NotFound();
-
-
-            var result = await _userManager.DeleteAsync(user);
-
-            return Ok(result);
+                 return Ok(userDto);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while deleting user data");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
         [HttpPost("block/{userId}")]
+        [Authorize(Roles = SD.Role_Admin)]
         public async Task<IActionResult> ToggleUserAccountStatus(string userId)
         {
             try
             {
-                var user = await _userManager.FindByIdAsync(userId);
-
-                if (user == null)
-                {
-                    throw new Exception($"User Not Found{userId}");
-                }
-
-                if (user != null)
-                {
-                    user.IsBlocked = !user.IsBlocked;
-                    await _userManager.UpdateAsync(user);
-                }
+                var user = await _service.UserService.BlockUnblock(userId);
 
                 return Ok(user);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while blocking user");
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         
             

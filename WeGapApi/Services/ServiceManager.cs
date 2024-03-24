@@ -15,6 +15,7 @@ namespace WeGapApi.Services
         private readonly Lazy<IEmployerService> _employerService;
         private readonly Lazy<IJobService> _jobService;
         private readonly Lazy<IJobSkillService> _jobSkillService;
+        private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<IJobTypeService> _jobTypeService;
         private readonly Lazy<EducationService> _educationService;
         private readonly Lazy<ExperienceService> _experienceService;
@@ -29,7 +30,8 @@ namespace WeGapApi.Services
             _jobService = new Lazy<IJobService>(() => new JobService(repositoryManager, mapper));
             _jobSkillService = new Lazy<IJobSkillService>(() => new JobSkillService(repositoryManager, mapper));
             _jobTypeService = new Lazy<IJobTypeService>(() => new JobTypeService(repositoryManager, mapper));
-		}
+            _skillService = new Lazy<ISkillService>(() => new SkillService(repositoryManager, mapper));
+        }
 
         public IUserService UserService => _userService.Value;
 
@@ -46,6 +48,7 @@ namespace WeGapApi.Services
         public IJobSkillService JobSkillService => _jobSkillService.Value;
 
         public IJobTypeService JobTypeService => _jobTypeService.Value;
+        public ISkillService SkillService => _skillService.Value;
     }
 }
 
