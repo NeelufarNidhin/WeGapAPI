@@ -12,6 +12,8 @@ using WeGapApi.Models.Dto;
 using WeGapApi.Services.Services.Interface;
 using WeGapApi.Utility;
 
+
+
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WeGapApi.Controllers
@@ -41,11 +43,16 @@ namespace WeGapApi.Controllers
             try{ 
             var employeeDto = await _serviceManager.EmployeeService.GetAllAsync();
 
-            return Ok(employeeDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = employeeDto;
+                return Ok(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.ToString() };
+                return BadRequest(_response);
+                //return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
 
@@ -58,14 +65,26 @@ namespace WeGapApi.Controllers
             try { 
             var employeeDto = await _serviceManager.EmployeeService.EmployeeExists(userId);
 
-            
-            return Ok(employeeDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = employeeDto;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.ToString() };
+                return BadRequest(_response);
+                //return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
+            
         }
 
 
@@ -79,12 +98,23 @@ namespace WeGapApi.Controllers
             {
 
                 var employeeDto = await _serviceManager.EmployeeService.GetEmployeeByIdAsync(id);
-
-                return Ok(employeeDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = employeeDto;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.ToString() };
+                return BadRequest(_response);
+                //return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
         }
@@ -97,12 +127,19 @@ namespace WeGapApi.Controllers
             try
             {
                 if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
+                {
 
-                //if (addEmployeeDto.Imagefile == null || addEmployeeDto.Imagefile.Length == 0)
-                //{
-                //    return BadRequest();
-                //}
+                    _response.IsSuccess = false;
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.ErrorMessages = new List<string>() { ModelState.ToString() };
+                    return BadRequest(_response);
+                }
+
+                if (addEmployeeDto.Imagefile == null || addEmployeeDto.Imagefile.Length == 0)
+                {
+                    return BadRequest();
+                }
+
 
                 string fileName = $"{Guid.NewGuid()}{Path.GetExtension(addEmployeeDto.Imagefile.FileName)}";
                 addEmployeeDto.ImageName = await _blobService.UploadBlob(fileName, SD.Storage_Container, addEmployeeDto.Imagefile);
@@ -110,16 +147,23 @@ namespace WeGapApi.Controllers
                 var employeeDto = _serviceManager.EmployeeService.AddEmployeeAsync(addEmployeeDto);
                     _response.Result = employeeDto;
                     _response.StatusCode = HttpStatusCode.Created;
-                    return CreatedAtRoute("EmployeeById", new { id = employeeDto.Id }, employeeDto);
+                    return CreatedAtRoute("EmployeeById", new { id = employeeDto.Id }, _response);
                
 
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessages = ex.ToString();
-
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.ErrorMessages = new List<string> { ex.ToString() };
+                return BadRequest(_response);
+               // return StatusCode((int)HttpStatusCode.InternalServerError, ex.ToString());
 
             }
 
@@ -131,36 +175,80 @@ namespace WeGapApi.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = SD.Role_Employee)]
-        public async Task<IActionResult> UpdateEmployee(Guid id, [FromBody] UpdateEmployeeDto updateEmployeeDto)
+        public async Task<IActionResult> UpdateEmployee(Guid id, [FromForm] UpdateEmployeeDto updateEmployeeDto)
         {
 
             try {
                 if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
+                {
+
+                    _response.IsSuccess = false;
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.ErrorMessages = new List<string>() { ModelState.ToString() };
+                    return BadRequest(_response);
+
+                }
+                var employeeFromdb = await _serviceManager.EmployeeService.GetEmployeeByIdAsync(id);
+                if (employeeFromdb.ImageName != null && employeeFromdb.ImageName.Length > 0)
+                {
+
+
+                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(updateEmployeeDto.Imagefile.FileName)}";
+                    await _blobService.DeleteBlob(employeeFromdb.ImageName.Split('/').Last(), SD.Storage_Container);
+                    employeeFromdb.ImageName = await _blobService.UploadBlob(fileName, SD.Storage_Container, updateEmployeeDto.Imagefile);
+                   updateEmployeeDto.ImageName = await _blobService.UploadBlob(fileName, SD.Storage_Container, updateEmployeeDto.Imagefile);
+
+
+                }
 
                 var employeeDto = await _serviceManager.EmployeeService.UpdateEmployeeAsync(id,updateEmployeeDto);
-
-                 return Ok(employeeDto);
+                _response.Result = employeeDto;
+                _response.StatusCode = HttpStatusCode.Created;
+                return CreatedAtRoute("EmployeeById", new { id = employeeFromdb.Id }, _response);
+               
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.ToString() };
+                return BadRequest(_response);
+                //return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = SD.Role_Employee)]
-        public async Task<IActionResult> DeleteEmployee(Guid id)
+        public async Task<ActionResult> DeleteEmployee(Guid id)
         {
-           try { 
-          await  _serviceManager.EmployeeService.DeleteEmployeeAsync(id);
+           try {
 
-            return Ok();
+                var employeeFromdb = await _serviceManager.EmployeeService.GetEmployeeByIdAsync(id);
+                await _blobService.DeleteBlob(employeeFromdb.ImageName.Split('/').Last(), SD.Storage_Container);
+                await  _serviceManager.EmployeeService.DeleteEmployeeAsync(id);
+                _response.StatusCode = HttpStatusCode.NoContent;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.ToString() };
+                return BadRequest(_response);
+                //return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
             }
         }

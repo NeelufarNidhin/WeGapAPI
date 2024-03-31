@@ -89,12 +89,12 @@ namespace WeGapApi.Data
 
             }
 
-            //employerfromDb.CompanyName = employer.CompanyName;
-            //employerfromDb.Description = employer.Description;
-            //employerfromDb.Location = employer.Location;
-            //employerfromDb.Website = employer.Website;
+            employerfromDb.CompanyName = employer.CompanyName;
+            employerfromDb.Description = employer.Description;
+            employerfromDb.Location = employer.Location;
+            employerfromDb.Website = employer.Website;
 
-            _context.Employers.Update(employer);
+            _context.Employers.Update(employerfromDb);
             _context.SaveChanges();
             return employerfromDb;
         }

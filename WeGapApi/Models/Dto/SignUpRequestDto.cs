@@ -5,8 +5,10 @@ namespace WeGapApi.Models.Dto
 {
 	public class SignUpRequestDto
 	{
-		[Required(ErrorMessage = "FirstName is required")]
+        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Use letters only please")]
+        [Required(ErrorMessage = "FirstName is required")]
 		public string FirstName { get; set; }
+        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Use letters only please")]
         [Required(ErrorMessage = "LastName is required")]
         public string LastName { get; set; }
         [Required(ErrorMessage = "Email is required")]

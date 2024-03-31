@@ -6,6 +6,7 @@ using System.Net;
 using WeGapApi.Models.Dto;
 using WeGapApi.Services.Services.Interface;
 using WeGapApi.Utility;
+using WeGapApi.Models;
 
 namespace WeGapApi.Controllers
 {
@@ -14,10 +15,11 @@ namespace WeGapApi.Controllers
     public class SkillController : Controller
     {
         private readonly IServiceManager _service;
-
+        private readonly ApiResponse _response;
         public SkillController(IServiceManager service)
         {
             _service = service;
+            _response = new ApiResponse();
 
         }
 
@@ -29,12 +31,24 @@ namespace WeGapApi.Controllers
             try
             {
                 var skillDto = await _service.SkillService.GetAllSkillAsync();
-
-                return Ok(skillDto);
+                _response.Result = skillDto;
+                _response.StatusCode = HttpStatusCode.OK;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
 
 
@@ -48,13 +62,26 @@ namespace WeGapApi.Controllers
         {
             try
             {
+               
                 var skillDto = await _service.SkillService.GetEmployeeSkillAsync(id);
+                _response.Result = skillDto;
+                _response.StatusCode = HttpStatusCode.OK;
 
-                return Ok(skillDto);
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+                return BadRequest(_response);
+                //return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
 
 
@@ -71,11 +98,24 @@ namespace WeGapApi.Controllers
             try
             {
                 var skillDto = await _service.SkillService.GetSkillByIdAsync(id);
-                return Ok(skillDto);
+                _response.Result = skillDto;
+                _response.StatusCode = HttpStatusCode.OK;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+                return BadRequest(_response);
+
+                //return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
 
         }
@@ -83,47 +123,89 @@ namespace WeGapApi.Controllers
 
         [HttpPost]
         [Authorize(Roles = SD.Role_Employee)]
-        public async Task<IActionResult> AddSkill([FromBody] AddSkillDto addSkillDto)
+        public async Task<ActionResult<ApiResponse>> AddSkill([FromBody] AddSkillDto addSkillDto)
         {
 
             try
             {
 
                 if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-                var skillDto = await _service.SkillService.AddSkillAsync(addSkillDto);
-                return CreatedAtAction(nameof(GetSkillById), new { id = skillDto.Id }, skillDto);
+                {
+                    _response.IsSuccess = false;
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.ErrorMessages = new List<string>() { ModelState.ToString() };
+                    return BadRequest(_response);
+                }
+                else
+                {
+                    var skillDto = await _service.SkillService.AddSkillAsync(addSkillDto);
+                    _response.Result = skillDto;
+                    _response.StatusCode = HttpStatusCode.Created;
+                    return CreatedAtAction(nameof(GetSkillById), new { id = skillDto.Id }, _response);
+                }   
+               
 
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+                return BadRequest(_response);
+                // return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
 
         [HttpPut("{id}")]
         [Authorize(Roles = SD.Role_Employee)]
-        public async Task<IActionResult> UpdateSkillJob(Guid id, [FromBody] UpdateSkillDto updateSkillDto)
+        public async Task<ActionResult<ApiResponse>> UpdateSkillJob(Guid id, [FromBody] UpdateSkillDto updateSkillDto)
         {
 
             try
             {
                 if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
+                {
+                   
+                    _response.IsSuccess = false;
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.ErrorMessages = new List<string>() { ModelState.ToString() };
+                    return BadRequest(_response);
+                }
+                    
 
 
                 else
                 {
                     var skillDto = await _service.SkillService.UpdateSkillAsync(id, updateSkillDto);
-                    return Ok(skillDto);
+                    _response.Result = skillDto;
+                    _response.StatusCode = HttpStatusCode.OK;
+                    return Ok(_response);
                 }
 
 
             }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
+            }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+                return BadRequest(_response);
+                // return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -133,12 +215,25 @@ namespace WeGapApi.Controllers
         {
             try
             {
-                await _service.SkillService.DeleteSkillAsync(id);
-                return Ok();
+                var skillDto =await _service.SkillService.DeleteSkillAsync(id);
+                _response.Result = skillDto;
+                _response.StatusCode = HttpStatusCode.OK;
+                return Ok(_response); ;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+                return BadRequest(_response);
+                // return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
     }

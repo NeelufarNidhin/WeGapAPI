@@ -16,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 using WeGapApi.Data;
 using WeGapApi.Models;
 using WeGapApi.Models.Dto;
+using WeGapApi.Services.Services.Interface;
 using WeGapApi.Utility;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -28,136 +29,57 @@ namespace WeGapApi.Controllers
     public class AuthController : ControllerBase
     {
 
-        private readonly ApplicationDbContext _db;
+
         private ApiResponse _response;
-        private string secretKey;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        
-        private readonly IEmailSender _emailSender;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-
-
-        public AuthController(ApplicationDbContext db, UserManager<ApplicationUser> userManager, 
-            RoleManager<IdentityRole> roleManager, IConfiguration configuration, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager)
+        public readonly IServiceManager _service;
+        public AuthController(IServiceManager service)
         {
-            _db = db;
+            _service = service;
             _response = new ApiResponse();
-            secretKey = configuration.GetValue<string>("ApiSettings:Secret");
-            _userManager = userManager;
-            _roleManager = roleManager;
-           
-            _emailSender = emailSender;
-            _signInManager = signInManager;
 
         }
 
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp([FromBody] SignUpRequestDto model)
         {
-            ApplicationUser userFromDb = _db.ApplicationUsers.FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
-
-            if (!ModelState.IsValid)
-            {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = ModelState.ToString();
-                return BadRequest(_response);
-            }
-                
-
-            if (userFromDb != null)
-            {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                _response.ErrorMessages="User Name already exists";
-                return BadRequest(_response);
-            }
-
-
-            ApplicationUser user = new()
-            {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                UserName = model.UserName,
-                Email = model.UserName,
-                NormalizedEmail = model.UserName.ToUpper(),
-                Role = model.Role,
-                TwoFactorEnabled = true
-            };
-
             try
             {
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (!result.Succeeded)
+
+                if (!ModelState.IsValid)
                 {
-                    _response.StatusCode = HttpStatusCode.BadRequest;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages = result.ToString();
-                    return BadRequest(_response);
+                    throw new InvalidOperationException(ModelState.ToString());
                 }
-                else { 
 
 
-                    if (!_roleManager.RoleExistsAsync(SD.Role_Admin).GetAwaiter().GetResult())
-                    {
-                        //create roles in database
-
-
-                        await _roleManager.CreateAsync(new IdentityRole(SD.Role_Admin));
-                        await _roleManager.CreateAsync(new IdentityRole(SD.Role_Employee));
-                        await _roleManager.CreateAsync(new IdentityRole(SD.Role_Employer));
-                    }
-
-
-                    if (model.Role.ToLower() == SD.Role_Admin)
-                    {
-                        await _userManager.AddToRoleAsync(user, SD.Role_Admin);
-
-                    }
-                    if (model.Role.ToLower() == SD.Role_Employer)
-                    {
-                        await _userManager.AddToRoleAsync(user, SD.Role_Employer);
-
-                    }
-                    else
-                    {
-                        await _userManager.AddToRoleAsync(user, SD.Role_Employee);
-
-                    }
-
-
-
-                     var otptoken = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
-                  //  string otptoken = GenerateRandomOtp();
-                    await _emailSender.SendEmailAsync(user.Email, "OTP Confirmation", otptoken);
-
-                    _response.StatusCode = HttpStatusCode.OK;
-                    _response.IsSuccess = true;
-                    _response.Message = $"We have sent OTP to your Email {user.Email}";
-                   // _response.Result = user.Email;
-                    return Ok(_response);
-
-
-
-                }
-                
+                var result = await _service.AuthenticationService.Register(model);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = result;
+                return Ok(_response);
             }
 
+
+
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
+            }
             catch (Exception ex)
             {
-                // _logger.LogError("Failed to generate email confirmation token for user {user.UserName}: {ex.Message}", ex);
                 _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.Message = ex.Message;
+                _response.ErrorMessages = new List<string> { "An error occurred during registration" };
                 _response.IsSuccess = false;
                 return BadRequest(_response);
             }
-
-
-
-          
-
         }
+
+
+
+
+
+
 
         //private string GenerateRandomOtp()
         //{
@@ -167,118 +89,81 @@ namespace WeGapApi.Controllers
 
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto loginDto)
         {
-
-            ApplicationUser userFromDb = _db.ApplicationUsers.FirstOrDefault(u => u.Email.ToLower() == model.Email.ToLower());
-
-            bool isValid = await _userManager.CheckPasswordAsync(userFromDb, model.Password);
-
-            if (isValid == false)
+            try
             {
-                _response.Result = new LoginResponseDto();
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = "Username or Password is Incorrect";
-                return BadRequest(_response);
-            }
-            if (userFromDb.IsBlocked)
-            {
-                _response.Result = new LoginResponseDto();
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                _response.ErrorMessages = "User Blocked, Please contact Adminstrator";
-                return BadRequest(_response);
-            }
 
-            var roles = await _userManager.GetRolesAsync(userFromDb);
-            JwtSecurityTokenHandler tokenHandler = new();
-            byte[] key = Encoding.ASCII.GetBytes(secretKey);
 
-            SecurityTokenDescriptor tokenDescriptor = new()
-            {
-                Subject = new ClaimsIdentity(new Claim[]
+                if (loginDto is null)
                 {
-                        new Claim("id", userFromDb.Id.ToString()),
-                        new Claim("firstName",userFromDb.FirstName.ToString()),
-                        new Claim("lastName",userFromDb.LastName.ToString()),
-                        new Claim(ClaimTypes.Email,userFromDb.UserName.ToString()),
-                        new Claim(ClaimTypes.Role , roles.FirstOrDefault()),
-                        new Claim("isBlocked",userFromDb.IsBlocked.ToString())
-                }),
-
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-
-
-            LoginResponseDto loginResponse = new()
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages = new List<string> { "Login Failed, Please check credentials" };
+                    return BadRequest(_response);
+                }
+                else
+                {
+                    var result = await _service.AuthenticationService.Login(loginDto);
+                    _response.StatusCode = HttpStatusCode.OK;
+                    _response.Result = result;
+                    return Ok(_response);
+                }
+            }
+            catch (InvalidOperationException ex)
             {
-                Email = userFromDb.Email,
-                Role = userFromDb.Role,
-                Token = tokenHandler.WriteToken(token)
-            };
-
-            if (loginResponse.Email == null || string.IsNullOrEmpty(loginResponse.Token))
-            {
-
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
-                _response.ErrorMessages = "Username or Password is Incorrect";
-                _response.ErrorMessages = "";
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.ToString() };
                 return BadRequest(_response);
             }
 
-            _response.StatusCode = HttpStatusCode.OK;
-            _response.Result = loginResponse;
-            _response.IsSuccess = true;
-            return Ok(_response);
 
-            
+
+
         }
 
 
 
-        //[Route("{email}")]
+
         [HttpPost("login-2FA")]
         public async Task<IActionResult> LoginWithOTP([FromBody] OTPLoginDto model)
         {
             try
             {
-                // Find the user by email
-                // var user = await _userManager.FindByEmailAsync(model.Email);
-                var user = await _userManager.FindByEmailAsync(model.Email);
 
-                // Verify the OTP using the user's email
-                var result = await _userManager.VerifyTwoFactorTokenAsync(user, "Email", model.Otp);
+                var result = await _service.AuthenticationService.LoginWithOTP(model);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = result;
+                return Ok(_response);
 
-                if (!result)
-                {
-                   
-                    // OTP verification failed
-                    _response.StatusCode = HttpStatusCode.BadRequest;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages="Invalid OTP";
-                    return BadRequest(_response);
-                }
-                else
-                {
-                    _response.IsSuccess = true;
-                    _response.StatusCode = HttpStatusCode.OK;
-                    return Ok(_response);
-                }
+
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                
-                _response.ErrorMessages= ex.Message;
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.ToString() };
                 return BadRequest(_response);
 
             }
-           
-           
+
+
         }
 
         [HttpPost("resend-otp")]
@@ -286,37 +171,30 @@ namespace WeGapApi.Controllers
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
 
-                if (user == null)
-                {
-                    _response.StatusCode = HttpStatusCode.BadRequest;
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages = "User not found";
-                    return BadRequest(_response);
-                }
-
-                var otptoken = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
-              
-                user.TwoFactorEnabled = true;
-                await _userManager.UpdateAsync(user);
-
-                // Send the new OTP to the user's email
-                await _emailSender.SendEmailAsync(user.Email, "New OTP", $"Your new OTP is: {otptoken}");
+                var result = await _service.AuthenticationService.ResendOTP(model);
 
                 _response.StatusCode = HttpStatusCode.OK;
-                _response.IsSuccess = true;
-                _response.Message = "New OTP sent successfully";
+
+                _response.Result = result;
                 return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
                 _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
-                _response.ErrorMessages = ex.Message;
-                return StatusCode(500, _response); // Internal Server Error
+                _response.ErrorMessages = new List<string> { ex.ToString() };
+                return BadRequest(_response);
             }
         }
+
 
 
 

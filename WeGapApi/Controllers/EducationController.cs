@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WeGapApi.Models;
@@ -21,9 +22,11 @@ namespace WeGapApi.Controllers
     public class EducationController : Controller
     {
         public readonly IServiceManager _service;
+        private ApiResponse _response;
         public EducationController(IServiceManager service)
         {
             _service= service;
+            _response = new ApiResponse();
         }
 
         [HttpGet]
@@ -34,12 +37,24 @@ namespace WeGapApi.Controllers
             try
             {
                var educationDto = await  _service.EducationService.GetAllAsync();
-                return Ok(educationDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = educationDto;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
                 {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
            
         }
@@ -52,11 +67,23 @@ namespace WeGapApi.Controllers
             try
             {
                 var educationDto = await _service.EducationService.GetEducationByIdAsync(id);
-                return Ok(educationDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = educationDto;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }   
 
            
@@ -72,11 +99,23 @@ namespace WeGapApi.Controllers
             {
                 var educationDto = await _service.EducationService.GetEmployeeEducation(id);
 
-                return Ok(educationDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = educationDto;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
 
             }
 
@@ -90,11 +129,23 @@ namespace WeGapApi.Controllers
             try
             {
                 var educationDto = await _service.EducationService.AddEducationAsync(addEducationDto);
-                return Ok(educationDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = educationDto;
+                return CreatedAtAction(nameof(GetEducationById), new { id = educationDto.Id }, _response);
             }
-            catch(Exception ex)
+            catch (InvalidOperationException ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
         }
 
@@ -111,11 +162,23 @@ namespace WeGapApi.Controllers
                     return BadRequest("" +
                         "education cannot be null");
                 }
-                return Ok(educationDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = educationDto;
+                return Ok(_response);
             }
-            catch(Exception ex)
+            catch (InvalidOperationException ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
         }
 
@@ -126,11 +189,23 @@ namespace WeGapApi.Controllers
             try
             {
                 var educationDto = await _service.EducationService.DeleteEducationAsync(id);
-                return Ok(educationDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = educationDto;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
         }
 

@@ -15,12 +15,12 @@ namespace WeGapApi.Repository
         }
         public async Task<Skill> AddSkillAsync(Skill skill)
         {
-            var skillfromDb = await _context.Skill.FirstOrDefaultAsync(u => u.SkillName == skill.SkillName);
+            var skillfromDb = await _context.Skill.FirstOrDefaultAsync(u => (u.SkillName == skill.SkillName && u.EmployeeId==skill.EmployeeId));
 
 
             if (skillfromDb != null)
             {
-                throw new Exception("Job Skill name already exists");
+                throw new InvalidOperationException("Job Skill name already exists");
             }
 
             await _context.Skill.AddAsync(skill);
@@ -33,7 +33,7 @@ namespace WeGapApi.Repository
             var skillfromDb = await _context.Skill.FirstOrDefaultAsync(x => x.Id == id);
             if (skillfromDb == null)
             {
-                throw new Exception("Job skill not Found");
+                throw new InvalidOperationException("Job skill not Found");
             }
 
             _context.Skill.Remove(skillfromDb);
@@ -48,7 +48,7 @@ namespace WeGapApi.Repository
             var skill = await _context.Skill.ToListAsync();
             if (skill == null)
             {
-                throw new Exception("Job skill not Found");
+                throw new InvalidOperationException("Job skill not Found");
             }
 
             return skill;
@@ -61,7 +61,7 @@ namespace WeGapApi.Repository
 
             if (skill is null)
             {
-                throw new Exception("skill not found");
+                throw new InvalidOperationException("skill not found");
 
             }
             return skill;
@@ -73,7 +73,7 @@ namespace WeGapApi.Repository
 
             if (skillfromDb == null)
             
-                throw new Exception(" skill not Found");
+                throw new InvalidOperationException(" skill not Found");
             
             return skillfromDb;
         }
@@ -84,7 +84,7 @@ namespace WeGapApi.Repository
 
             if (skillfromDb == null)
             {
-                throw new Exception("Job skill not Found");
+                throw new InvalidOperationException("Job skill not Found");
             }
 
             skillfromDb.SkillName = skill.SkillName;

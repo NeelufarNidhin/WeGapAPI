@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,30 +25,62 @@ namespace WeGapApi.Controllers
     {
 
         private readonly IServiceManager _service;
-        
 
+        private readonly ApiResponse _response;
         public UserController(IServiceManager service)
         {
             _service = service;
+            _response = new ApiResponse();
         }
 
         
         [HttpGet()]
         [Authorize(Roles = SD.Role_Admin)]
-        public async Task<IActionResult> GetAllUser()
+        public async Task<IActionResult> GetAllUser([FromQuery] string searchString, [FromQuery] string role,
+            [FromQuery] int pageNumber = 1 , [FromQuery] int pageSize = 10)
 
         {
             try
             {
-                var users = _service.UserService.GetAllUsers();
+                // var users = _service.UserService.GetAllUsers();
+                List<UserDto> users;
+                if (string.IsNullOrEmpty(searchString))
+                {
+                    users = await _service.UserService.GetAllUsers(pageNumber, pageSize);
+                    if (!string.IsNullOrEmpty(role))
+                    {
+                        users = users.Where(u => u.Role == role).ToList();
+                    }
+                }
+               
+                else
+                {
+                    var searchResult = await _service.UserService.GetSearchQuery(searchString);
+                     users = searchResult.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                }
+               
 
-                return Ok(users);
+               
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = users;
+                return Ok(_response);
             }
-            catch(Exception ex)
+            catch (InvalidOperationException ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
-           
+            catch (Exception ex)
+            {
+
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
+            }
+
         }
 
        
@@ -59,14 +92,27 @@ namespace WeGapApi.Controllers
             {
                
                var userDto = await _service.UserService.UpdateUser(id,updatedUser);
-                return Ok(userDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = userDto;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
 
-            
+
         }
 
       
@@ -77,11 +123,24 @@ namespace WeGapApi.Controllers
             try {
                 var userDto = await _service.UserService.DeleteUser(id);
 
-                 return Ok(userDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = userDto;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
         }
 
@@ -93,15 +152,28 @@ namespace WeGapApi.Controllers
             {
                 var user = await _service.UserService.BlockUnblock(userId);
 
-                return Ok(user);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = user;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
-        
-            
-          
+
+
+
         }
 
     }

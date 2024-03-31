@@ -17,33 +17,43 @@ using WeGapApi.Utility;
 namespace WeGapApi.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = SD.Role_Admin)]
+    
     public class JobTypeController : Controller
     {
        private readonly IServiceManager _service;
-
+        private readonly ApiResponse _response;
         public JobTypeController(IServiceManager service)
         {
             _service = service;
+            _response = new ApiResponse();
         }
 
         [HttpGet]
-        [Authorize(Roles = SD.Role_Admin)]
+        [Authorize(Roles = SD.Role_Admin + " ," + SD.Role_Employer)]
         public async Task<IActionResult> GetAllJobType()
         {
             try { 
 
             var jobTypeDto = await _service.JobTypeService.GetAllJobTypeAsync();
-            if(jobTypeDto is null)
-                {
-                    return NotFound("JobType is Empty ");
-                }
-            return Ok(jobTypeDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = jobTypeDto;
+                return Ok(_response);
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
 
 
@@ -52,20 +62,33 @@ namespace WeGapApi.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        [Authorize(Roles = SD.Role_Admin)]
+        [Authorize(Roles = SD.Role_Admin + " ," + SD.Role_Employer)]
         public async Task<IActionResult> GetJobTypeById([FromRoute] Guid id)
         {
             //obtain data
 
             try { 
             var jobTypeDto = await _service.JobTypeService.GetJobTypeByIdAsync(id);
-                
-                return Ok(jobTypeDto);
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = jobTypeDto;
+                return Ok(_response);
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
 
 
@@ -73,7 +96,7 @@ namespace WeGapApi.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = SD.Role_Admin)]
+        [Authorize(Roles = SD.Role_Admin + " ," + SD.Role_Employer)]
         public async Task<IActionResult> AddJobType([FromBody] AddJobTypeDto addJobTypeDto)
         {
 
@@ -82,18 +105,28 @@ namespace WeGapApi.Controllers
                     return BadRequest(ModelState);
 
                 var jobTypeDto = await _service.JobTypeService.AddJobTypeAsync(addJobTypeDto);
-                if(addJobTypeDto is null)
-                {
-                    return NotFound("Job Credentials not found");
-                }
-                    return CreatedAtAction(nameof(GetJobTypeById), new { id = jobTypeDto.Id }, jobTypeDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = jobTypeDto;
+                
+
+                return CreatedAtAction(nameof(GetJobTypeById), new { id = jobTypeDto.Id }, _response);
                 
            
             }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
+            }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
         }
 
@@ -108,30 +141,56 @@ namespace WeGapApi.Controllers
                     return BadRequest(ModelState);
 
                 var jobTypeDto = await _service.JobTypeService.UpdateJobTypeAsync(id, updateJobTypeDto);
-                    return Ok(jobTypeDto);
-               
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = jobTypeDto;
+                return Ok(_response);
+
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
 
-}
+        }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = SD.Role_Admin)]
         public async Task<IActionResult> DeleteJobtype(Guid id)
         {
             try { 
-            await _service.JobTypeService.DeleteJobTypeAsync(id);
+         var jobTypeDto=  await _service.JobTypeService.DeleteJobTypeAsync(id);
 
-            return Ok();
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = jobTypeDto;
+                return Ok(_response);
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
         }
     }

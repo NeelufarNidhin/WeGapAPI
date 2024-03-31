@@ -26,7 +26,7 @@ namespace WeGapApi.Data
         {
             if(employee is null)
             {
-                throw new Exception("Employee not found");
+                throw new InvalidOperationException("Employee not found");
             }
 
            await _context.Employees.AddAsync(employee);
@@ -46,7 +46,7 @@ namespace WeGapApi.Data
 
             if (employeefromDb == null)
             {
-                throw new Exception("Employee not found");
+                throw new InvalidOperationException("Employee not found");
             }
 
            _context.Employees.Remove(employeefromDb);
@@ -71,7 +71,7 @@ namespace WeGapApi.Data
 
             if (employeefromDb == null)
             {
-                throw new Exception("Employee not found");
+                throw new InvalidOperationException("Employee not found");
             }
 
             return employeefromDb;
@@ -83,7 +83,7 @@ namespace WeGapApi.Data
 
             if(user is null)
             {
-                throw new Exception("User not found");
+                throw new InvalidOperationException("User not found");
             }
             return user;
         }
@@ -95,16 +95,19 @@ namespace WeGapApi.Data
 
             if(employeefromDb == null)
             {
-                throw new Exception("Employee not found");
+                throw new InvalidOperationException("Employee not found");
             }
 
-            //employeefromDb.Address = employee.Address;
-            //employeefromDb.City = employee.City;
-            //employeefromDb.DOB = employee.DOB;
-            //employeefromDb.MobileNumber = employee.MobileNumber;
-            //employeefromDb.Pincode = employee.Pincode;
-            //employeefromDb.State = employee.State;
-            _context.Employees.Update(employee);
+            employeefromDb.Address = employee.Address;
+            employeefromDb.City = employee.City;
+            employeefromDb.DOB = employee.DOB;
+            employee.Gender = employee.Gender;
+            employeefromDb.MobileNumber = employee.MobileNumber;
+            employeefromDb.Pincode = employee.Pincode;
+            employeefromDb.State = employee.State;
+            employeefromDb.Bio = employee.Bio;
+            employeefromDb.ImageName = employee.ImageName;
+            _context.Employees.Update(employeefromDb);
             _context.SaveChanges();
             return employeefromDb;
 

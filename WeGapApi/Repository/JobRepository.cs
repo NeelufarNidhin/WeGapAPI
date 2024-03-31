@@ -16,34 +16,47 @@ namespace WeGapApi.Repository
 
         public async Task<Job> AddJobsAsync(Job job)
         {
-          await _context.Jobs.AddAsync(job);
-           
-            //await _context.SaveChangesAsync();
-
-            foreach (var jobSkillId in job.JobJobSkill.Select(jjs => jjs.JobSkillId))
+            try
             {
-                var jobJobSkill = new JobJobSkill
-                {
-                    JobId = job.Id,
-                    JobSkillId = jobSkillId
-                };
+                // Add job to context
+                await _context.Jobs.AddAsync(job);
 
-                // Add the new JobJobSkill entry to the context
-                _context.JobJobSkill.Add(jobJobSkill);
-               
+              //  If job has associated job skills
+                //if (job.JobJobSkill != null && job.JobJobSkill.Any())
+                //{
+                    // Iterate over each job skill ID in the input array
+                    foreach (var jobSkillId in job.JobJobSkill.Select(jjs => jjs.JobSkillId))
+                    {
+                        var jobJobSkill = new JobJobSkill
+                        {
+                            JobId = job.Id, // Ensure that the job ID is properly assigned
+                            JobSkillId = jobSkillId
+                        };
+
+                        // Add the new JobJobSkill entry to the context
+                        _context.JobJobSkill.Add(jobJobSkill);
+                    }
+                //}
+
+                // Save changes to database
+                await _context.SaveChangesAsync();
+                return job;
             }
-
-            // Save changes after adding all JobJobSkill entries
-            await _context.SaveChangesAsync();
-            return job;
+            catch (Exception ex)
+            {
+                // Handle any exceptions
+                // Log or throw the exception as needed
+                throw new Exception("Failed to add job with job skills.", ex);
+            }
         }
+
 
         public async Task<Job> DeleteJobsAsync(Guid id)
         {
             var jobfromDb = await _context.Jobs.FirstOrDefaultAsync(x => x.Id == id);
             if(jobfromDb is null)
             {
-                throw new Exception("Job Not found");
+                throw new InvalidOperationException("Job Not found");
             }
 
             _context.Jobs.Remove(jobfromDb);
@@ -63,7 +76,7 @@ namespace WeGapApi.Repository
             var jobfromDb = await _context.Jobs.FirstOrDefaultAsync(x => x.Id == id);
             if (jobfromDb is null)
             {
-                throw new Exception("Job Not found");
+                throw new InvalidOperationException("Job Not found");
             }
             return jobfromDb;
         }
@@ -74,12 +87,12 @@ namespace WeGapApi.Repository
 
             if(jobfromDb == null)
             {
-                throw new Exception("Job Not found");
+                throw new InvalidOperationException("Job Not found");
             }
 
-            //jobfromDb.JobTitle = job.JobTitle;
-            //jobfromDb.Description = job.Description;
-            _context.Jobs.Update(job);
+            jobfromDb.JobTitle = job.JobTitle;
+            jobfromDb.Description = job.Description;
+            _context.Jobs.Update(jobfromDb);
 
            await _context.SaveChangesAsync();
 

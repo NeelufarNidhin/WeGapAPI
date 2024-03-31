@@ -21,13 +21,13 @@ namespace WeGapApi.Repository
 
         public async Task<Experience> AddExperienceAsync(Experience experience)
         {
-             var userFromDb = _context.Experience.FirstOrDefault(x => x.CompanyName == experience.CompanyName);
-            {
+             var userFromDb = _context.Experience.FirstOrDefault(x => (x.CompanyName == experience.CompanyName && x.EmployeeId == experience.EmployeeId));
+            
                 if(userFromDb is not null )
                 {
-                    throw new Exception("Experience Already Exists");
+                    throw new InvalidOperationException("Experience Already Exists");
                 }
-            }
+            
             await _context.Experience.AddAsync(experience);
 
             _context.SaveChanges();
@@ -41,7 +41,7 @@ namespace WeGapApi.Repository
 
             if (experiencefromDb == null)
             {
-                throw new Exception("Experience Not found");
+                throw new InvalidOperationException("Experience Not found");
             }
 
             _context.Experience.Remove(experiencefromDb);
@@ -55,7 +55,7 @@ namespace WeGapApi.Repository
 
             if (experience is null)
             {
-                throw new Exception("experince not found");
+                throw new InvalidOperationException("experince not found");
 
             }
             return experience;
@@ -70,7 +70,12 @@ namespace WeGapApi.Repository
 
         public async Task<Experience> GetExperienceByIdAsync(Guid id)
         {
-            return await _context.Experience.FirstOrDefaultAsync(x => x.Id == id);
+          var experiencefromDb = await _context.Experience.FirstOrDefaultAsync(x => x.Id == id);
+            if (experiencefromDb == null)
+            {
+                throw new InvalidOperationException("Experience Not found");
+            }
+            return experiencefromDb;
         }
 
         public async Task<Experience> UpdateExperienceAsync(Guid id, Experience experience)
@@ -80,16 +85,17 @@ namespace WeGapApi.Repository
 
             if (experiencefromDb == null)
             {
-                throw new Exception("Experience Not found");
+                throw new InvalidOperationException("Experience Not found");
             }
 
-            //experiencefromDb.CurrentJobTitle = experience.CurrentJobTitle;
-            //experiencefromDb.CompanyName = experience.CompanyName;
-            //experiencefromDb.Starting_Date = experience.Starting_Date;
-            //experiencefromDb.CompletionDate = experience.CompletionDate;
-            //experiencefromDb.IsWorking = experience.IsWorking;
-            //experiencefromDb.Description = experience.Description;
-             _context.Experience.Update(experience);
+            experiencefromDb.CurrentJobTitle = experience.CurrentJobTitle;
+            experiencefromDb.CompanyName = experience.CompanyName;
+            experiencefromDb.Starting_Date = experience.Starting_Date;
+            experiencefromDb.CompletionDate = experience.CompletionDate;
+            experiencefromDb.IsWorking = experience.IsWorking;
+            experiencefromDb.Description = experience.Description;
+           // experiencefromDb.EmployeeId = experience.EmployeeId;
+            _context.Experience.Update(experiencefromDb);
  
 
             _context.SaveChanges();

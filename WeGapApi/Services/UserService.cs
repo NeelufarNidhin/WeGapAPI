@@ -33,13 +33,23 @@ namespace WeGapApi.Services
             return userDto;
         }
 
-        public  async Task<List<UserDto>> GetAllUsers()
+        public  async Task<List<UserDto>> GetAllUsers(int pageNumber, int pageSize)
         {
 
+           
+                var users =  _repositoryManager.User.GetUsers();
+            var paginatedUsers = users.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
-            var user =  _repositoryManager.User.GetUsers();
-            var userDto = _mapper.Map<List<UserDto>>(user);
+            var userDto = _mapper.Map<List<UserDto>>(paginatedUsers);
             return userDto;
+        }
+
+        public async Task<List<UserDto>> GetSearchQuery(string searchString)
+        {
+            var users =  _repositoryManager.User.GetSearchQuery(searchString);
+            var userDto = _mapper.Map<List<UserDto>>(users);
+            return userDto;
+
         }
 
         public async Task<UserDto> GetUserById(string id)

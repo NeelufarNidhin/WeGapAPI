@@ -14,7 +14,8 @@ namespace WeGapApi.Models.Dto
         public string Description { get; set; }
         public DateTime Starting_Date { get; set; }
         public DateTime CompletionDate { get; set; }
-       
+        
+
 
     }
 }

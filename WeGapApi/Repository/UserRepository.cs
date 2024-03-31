@@ -26,7 +26,7 @@ namespace WeGapApi.Data
             var user = _db.ApplicationUsers.FirstOrDefault(x => x.Id == id);
             if(user is null)
             {
-                throw new Exception("User Not Found");
+                throw new InvalidOperationException("User Not Found");
             }
 
             return user;
@@ -36,10 +36,10 @@ namespace WeGapApi.Data
 
         public List<ApplicationUser> GetSearchQuery(string searchString)
         {
-            var users = _db.ApplicationUsers.Where(x => x.Email.Contains(searchString)
-            || x.FirstName.Contains(searchString) || x.LastName.Contains(searchString)).ToList();
+            var users = _db.ApplicationUsers.Where(x => x.Email.ToLower().Contains(searchString)
+            || x.FirstName.ToLower().Contains(searchString) || x.LastName.ToLower().Contains(searchString)).ToList();
 
-            return users.ToList();
+            return users;
         }
 
 
@@ -51,7 +51,7 @@ namespace WeGapApi.Data
             var userFromDb = _db.ApplicationUsers.FirstOrDefault(x => x.Id == id);
             if(userFromDb is null)
             {
-                throw new Exception("User Not Found");
+                throw new InvalidOperationException("User Not Found");
             }
             _db.ApplicationUsers.Update(user);
             _db.SaveChanges();
@@ -63,7 +63,7 @@ namespace WeGapApi.Data
             var userFromDb = _db.ApplicationUsers.FirstOrDefault(u => u.Id == id);
             if (userFromDb is null)
             {
-                throw new Exception("User Not Found");
+                throw new InvalidOperationException("User Not Found");
             }
 
             userFromDb.IsBlocked = !userFromDb.IsBlocked;
@@ -80,7 +80,7 @@ namespace WeGapApi.Data
             var userFromDb = _db.ApplicationUsers.FirstOrDefault(u => u.Id == id);
             if (userFromDb is null)
             {
-                throw new Exception("User Not Found");
+                throw new InvalidOperationException("User Not Found");
             }
 
             _db.ApplicationUsers.Remove(userFromDb);

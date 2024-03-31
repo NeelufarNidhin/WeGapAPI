@@ -20,6 +20,13 @@ namespace WeGapApi.Repository
         
         public  async Task<Education> AddEducationAsync(Education education)
         {
+              var userFromDb = _context.Education.FirstOrDefault(x => (x.Degree == education.Degree && x.Subject == education.Subject && x.EmployeeId == x.EmployeeId));
+            
+                if(userFromDb is not null )
+                {
+                    throw new InvalidOperationException("Education Already Exists");
+                }
+            
            await _context.Education.AddAsync(education);
             _context.SaveChanges();
             return (education);
@@ -32,7 +39,7 @@ namespace WeGapApi.Repository
 
             if(educationFromDb == null)
             {
-                return null;
+                throw new InvalidOperationException("education id not found");
             }
 
             _context.Education.Remove(educationFromDb);
@@ -48,10 +55,16 @@ namespace WeGapApi.Repository
 
         public async Task<Education> GetEducationByIdAsync(Guid id)
         {
-           return  await _context.Education.FirstOrDefaultAsync(u => u.Id == id);
-            
+            var educationFromDb = await _context.Education.FirstOrDefaultAsync(u => u.Id == id);
 
+            if (educationFromDb == null)
+            {
+                throw new InvalidOperationException("education id not found");
+            }
+            return educationFromDb;
         }
+
+    
 
         public async Task<List<Education>> GetEmployeeEducation(Guid id)
         {
@@ -59,7 +72,7 @@ namespace WeGapApi.Repository
 
             if (education is null)
             {
-                throw new Exception("education not found");
+                throw new InvalidOperationException("education not found");
 
             }
             return education;
@@ -71,7 +84,7 @@ namespace WeGapApi.Repository
 
             if (educationFromDb == null)
             {
-                return null;
+                throw new InvalidOperationException("education id not found");
             }
 
             educationFromDb.University = education.University;

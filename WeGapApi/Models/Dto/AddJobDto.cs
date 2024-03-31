@@ -19,7 +19,8 @@ namespace WeGapApi.Models.Dto
         public Guid JobTypeId { get; set; }
 
 
-        public List<JobJobSkill> JobJobSkill { get; set; }
+        public ICollection<JobJobSkill> JobJobSkill { get; set; }
+       
     }
 }
 

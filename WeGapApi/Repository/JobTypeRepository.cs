@@ -20,7 +20,7 @@ namespace WeGapApi.Repository
 
             if(jobTypeFromDb != null)
             {
-                throw new  Exception("Job Type already exists");
+                throw new InvalidOperationException("Job Type already exists");
             }
             await _context.JobType.AddAsync(jobType);
             _context.SaveChanges();
@@ -32,7 +32,7 @@ namespace WeGapApi.Repository
             var jobTypefromDb = await _context.JobType.FirstOrDefaultAsync(x => x.Id == id);
             if (jobTypefromDb == null)
             {
-                throw new Exception("Job Type not Found");
+                throw new InvalidOperationException("Job Type not Found");
             }
 
             _context.JobType.Remove(jobTypefromDb);
@@ -52,7 +52,7 @@ namespace WeGapApi.Repository
             var jobTypefromDb = await _context.JobType.FirstOrDefaultAsync(x => x.Id == id);
             if (jobTypefromDb == null)
             {
-                throw new Exception("Job Type not Found");
+                throw new InvalidOperationException("Job Type not Found");
             }
             return jobTypefromDb;
         }
@@ -63,7 +63,7 @@ namespace WeGapApi.Repository
 
             if (jobTypefromDb == null)
             {
-                throw new Exception("Job Type not Found");
+                throw new InvalidOperationException("Job Type not Found");
             }
            
                 jobTypefromDb.JobTypeName = jobType.JobTypeName;

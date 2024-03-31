@@ -24,11 +24,12 @@ namespace WeGapApi.Controllers
     {
 
         private readonly IServiceManager _service;
-
+        private readonly ApiResponse _response;
 
         public JobController( IServiceManager service)
         {
             _service = service;
+            _response = new ApiResponse();
 
         }
 
@@ -38,13 +39,25 @@ namespace WeGapApi.Controllers
         {
             try { 
             var jobDto = await _service.JobService.GetAllJobsAsync();
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = jobDto;
+                return Ok(_response);
 
-            return Ok(jobDto);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
 
 
@@ -59,12 +72,24 @@ namespace WeGapApi.Controllers
             try { 
 
             var jobDto = await _service.JobService.GetJobsByIdAsync(id);
-            return Ok(jobDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = jobDto;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
 
 
@@ -81,14 +106,26 @@ namespace WeGapApi.Controllers
 
 
                 var jobDto = await _service.JobService.AddJobsAsync(addJobDto);
-
-                    return CreatedAtAction(nameof(GetJobById), new { id = jobDto.Id }, jobDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = jobDto;
+               
+                return CreatedAtAction(nameof(GetJobById), new { id = jobDto.Id }, _response);
                 
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
 
 
@@ -104,13 +141,25 @@ namespace WeGapApi.Controllers
 
                 var jobDto = await _service.JobService.UpdateJobsAsync(id, updateJobDto);
 
-                    return Ok(jobDto);
-                
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = jobDto;
+                return Ok(_response);
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
         }
 
@@ -120,14 +169,26 @@ namespace WeGapApi.Controllers
         {
             try { 
             var jobDto = await _service.JobService.DeleteJobsAsync(id);
-                
 
-            return Ok(jobDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = jobDto;
+                return Ok(_response);
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
         }
     }

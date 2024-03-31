@@ -23,10 +23,11 @@ namespace WeGapApi.Controllers
     {
 
         private readonly IServiceManager _service;
-
+        private ApiResponse _response;
         public ExperienceController(IServiceManager service)
         {
             _service = service;
+            _response = new ApiResponse();
         }
 
         [HttpGet]
@@ -36,12 +37,25 @@ namespace WeGapApi.Controllers
 
             try { 
           var experienceDto =  await _service.ExperienceService.GetAllExperienceAsync();
-            return Ok(experienceDto);
+               
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = experienceDto;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
 
         }
@@ -57,12 +71,24 @@ namespace WeGapApi.Controllers
             try { 
           var experienceDto = await _service.ExperienceService.GetExperienceByIdAsync(id);
 
-            return Ok(experienceDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = experienceDto;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
 
         }
@@ -76,12 +102,24 @@ namespace WeGapApi.Controllers
             {
                 var experienceDto = await _service.ExperienceService.GetEmployeeExperience(id);
 
-                return Ok(experienceDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = experienceDto;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
 
         }
@@ -97,13 +135,25 @@ namespace WeGapApi.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 var experienceDto = await _service.ExperienceService.AddExperienceAsync(addExperienceDto);
-
-                return CreatedAtAction(nameof(GetExperienceById), new { id = experienceDto.Id }, experienceDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = experienceDto;
+              
+                return CreatedAtAction(nameof(GetExperienceById), new { id = experienceDto.Id }, _response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
         }
 
@@ -115,12 +165,24 @@ namespace WeGapApi.Controllers
             try { 
          var experienceDto =  await _service.ExperienceService.UpdateExperienceAsync(id, updateExperienceDto);
 
-            return Ok(experienceDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = experienceDto;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
         }
 
@@ -130,12 +192,24 @@ namespace WeGapApi.Controllers
         {
             try { 
             var experienceDto = await _service.ExperienceService.DeleteExperienceAsync(id);
-            return Ok(experienceDto);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = experienceDto;
+                return Ok(_response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+                return BadRequest(_response);
             }
         }
 

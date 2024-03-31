@@ -19,9 +19,11 @@ namespace WeGapApi.Models
 
         [Required(ErrorMessage = "JobType is required")]
         public Guid JobTypeId { get; set; }
+        public JobType JobType { get; set; }
 
         [Required(ErrorMessage = "Jobskill is required")]
-        public List<JobJobSkill> JobJobSkill { get; set; }
+        public ICollection<JobJobSkill> JobJobSkill { get; set; }
+        public JobSkill JobSkill { get; set; }
 
     }
 }

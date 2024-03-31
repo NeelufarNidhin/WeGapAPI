@@ -22,7 +22,9 @@ namespace WeGapApi.Services
         {
 
 
-            var job =  _mapper.Map<Job>(addJobDto);
+           var job =  _mapper.Map<Job>(addJobDto);
+
+           
 
             var jobDomain = await _repositoryManager.Job.AddJobsAsync(job);
 

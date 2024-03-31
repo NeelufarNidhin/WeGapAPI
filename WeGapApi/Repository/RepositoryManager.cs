@@ -13,10 +13,10 @@ namespace WeGapApi.Repository
         private readonly Lazy<IEmployerRepository> _employerRepository;
         private readonly Lazy<IEducationRepository> _educationRepository;
         private readonly Lazy<IExperienceRepository> _experienceRepository;
-        private readonly Lazy<JobRepository> _jobRepository;
-        private readonly Lazy<JobSkillRepository> _jobSkillRepository;
-        private readonly Lazy<JobTypeRepository> _jobTypeRepository;
-        private readonly Lazy<SkillRepository> _skillRepository;
+        private readonly Lazy<IJobRepository> _jobRepository;
+        private readonly Lazy<IJobSkillRepository> _jobSkillRepository;
+        private readonly Lazy<IJobTypeRepository> _jobTypeRepository;
+        private readonly Lazy<ISkillRepository> _skillRepository;
 
 
         public RepositoryManager(ApplicationDbContext dbContext)
@@ -27,10 +27,10 @@ namespace WeGapApi.Repository
             _employerRepository = new Lazy<IEmployerRepository>(() => new EmployerRepository(dbContext));
             _educationRepository = new Lazy<IEducationRepository>(() => new EducationRepository(dbContext));
             _experienceRepository = new Lazy<IExperienceRepository>(() => new ExperienceRepository(dbContext));
-            _jobRepository = new Lazy<JobRepository>(() => new JobRepository(dbContext));
-            _jobSkillRepository = new Lazy<JobSkillRepository>(() => new JobSkillRepository(dbContext));
-            _jobTypeRepository = new Lazy<JobTypeRepository>(() => new JobTypeRepository(dbContext));
-            _skillRepository = new Lazy<SkillRepository>(() => new SkillRepository(dbContext));
+            _jobRepository = new Lazy<IJobRepository>(() => new JobRepository(dbContext));
+            _jobSkillRepository = new Lazy<IJobSkillRepository>(() => new JobSkillRepository(dbContext));
+            _jobTypeRepository = new Lazy<IJobTypeRepository>(() => new JobTypeRepository(dbContext));
+            _skillRepository = new Lazy<ISkillRepository>(() => new SkillRepository(dbContext));
 
 
         }

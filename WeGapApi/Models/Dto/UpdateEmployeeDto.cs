@@ -6,6 +6,7 @@ namespace WeGapApi.Models.Dto
     public class UpdateEmployeeDto
     {
         public DateTime DOB { get; set; }
+        public string Gender { get; set; }
         [Required(ErrorMessage = "Address is required")]
         public string Address { get; set; }
         [Required(ErrorMessage = "State is required")]
@@ -14,7 +15,9 @@ namespace WeGapApi.Models.Dto
         public string City { get; set; }
         public int Pincode { get; set; }
         public int MobileNumber { get; set; }
+        public string Bio { get; set; }
         public IFormFile Imagefile { get; set; }
+        public string ImageName { get; set; }
     }
 
 }
