@@ -49,4 +49,7 @@
     <Folder Include="Services\" />
     <Folder Include="Services\Services.Interface\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Remove="appsettings.Development.json" />
+  </ItemGroup>
 </Project>
